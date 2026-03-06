@@ -40929,7 +40929,7 @@ var SkillsComponent = class _SkillsComponent {
       \u0275\u0275text(38, "Others");
       \u0275\u0275elementEnd();
       \u0275\u0275elementStart(39, "p");
-      \u0275\u0275text(40, "Additional skills (dummy \u2013 can be updated later).");
+      \u0275\u0275text(40, "Additional skills ");
       \u0275\u0275elementEnd();
       \u0275\u0275elementStart(41, "div", 4)(42, "span", 5);
       \u0275\u0275text(43, "REST API");
@@ -41052,11 +41052,43 @@ var ProjectsComponent = class _ProjectsComponent {
 })();
 
 // src/app/components/experience/experience.component.ts
+function ExperienceComponent_div_9_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "div", 5);
+    \u0275\u0275element(1, "div", 6);
+    \u0275\u0275elementStart(2, "div")(3, "h4");
+    \u0275\u0275text(4);
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(5, "div", 7);
+    \u0275\u0275text(6);
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(7, "p");
+    \u0275\u0275text(8);
+    \u0275\u0275elementEnd()()();
+  }
+  if (rf & 2) {
+    const exp_r1 = ctx.$implicit;
+    \u0275\u0275advance(4);
+    \u0275\u0275textInterpolate(exp_r1.role);
+    \u0275\u0275advance(2);
+    \u0275\u0275textInterpolate2("", exp_r1.duration, " \u2022 ", exp_r1.technologies, "");
+    \u0275\u0275advance(2);
+    \u0275\u0275textInterpolate(exp_r1.description);
+  }
+}
 var ExperienceComponent = class _ExperienceComponent {
+  experiences = [
+    {
+      role: "Angular Developer",
+      duration: "1.6 Years",
+      technologies: "Angular \u2022 SaaS / ERP",
+      description: "Worked on REval ERP SaaS application involving planning modules, forms, validations, and UI enhancements."
+    }
+  ];
   static \u0275fac = function ExperienceComponent_Factory(__ngFactoryType__) {
     return new (__ngFactoryType__ || _ExperienceComponent)();
   };
-  static \u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _ExperienceComponent, selectors: [["app-experience"]], standalone: true, features: [\u0275\u0275StandaloneFeature], decls: 18, vars: 0, consts: [["id", "experience"], [1, "section-head"], [1, "card", 2, "padding", "18px"], [1, "timeline"], [1, "step"], ["aria-hidden", "true", 1, "dot"], [1, "meta"]], template: function ExperienceComponent_Template(rf, ctx) {
+  static \u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _ExperienceComponent, selectors: [["app-experience"]], standalone: true, features: [\u0275\u0275StandaloneFeature], decls: 10, vars: 1, consts: [["id", "experience"], [1, "section-head"], [1, "card", 2, "padding", "18px"], [1, "timeline"], ["class", "step", 4, "ngFor", "ngForOf"], [1, "step"], ["aria-hidden", "true", 1, "dot"], [1, "meta"]], template: function ExperienceComponent_Template(rf, ctx) {
     if (rf & 1) {
       \u0275\u0275elementStart(0, "section", 0)(1, "div", 1)(2, "div")(3, "h2");
       \u0275\u0275text(4, "Experience");
@@ -41064,22 +41096,18 @@ var ExperienceComponent = class _ExperienceComponent {
       \u0275\u0275elementStart(5, "p");
       \u0275\u0275text(6, "Professional work experience.");
       \u0275\u0275elementEnd()()();
-      \u0275\u0275elementStart(7, "div", 2)(8, "div", 3)(9, "div", 4);
-      \u0275\u0275element(10, "div", 5);
-      \u0275\u0275elementStart(11, "div")(12, "h4");
-      \u0275\u0275text(13, "Angular Developer");
-      \u0275\u0275elementEnd();
-      \u0275\u0275elementStart(14, "div", 6);
-      \u0275\u0275text(15, "1.6 Years \u2022 Angular \u2022 SaaS / ERP");
-      \u0275\u0275elementEnd();
-      \u0275\u0275elementStart(16, "p");
-      \u0275\u0275text(17, "Worked on REval ERP SaaS application involving planning modules, forms, validations, and UI enhancements.");
-      \u0275\u0275elementEnd()()()()()();
+      \u0275\u0275elementStart(7, "div", 2)(8, "div", 3);
+      \u0275\u0275template(9, ExperienceComponent_div_9_Template, 9, 4, "div", 4);
+      \u0275\u0275elementEnd()()();
     }
-  }, encapsulation: 2 });
+    if (rf & 2) {
+      \u0275\u0275advance(9);
+      \u0275\u0275property("ngForOf", ctx.experiences);
+    }
+  }, dependencies: [CommonModule, NgForOf], encapsulation: 2 });
 };
 (() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(ExperienceComponent, { className: "ExperienceComponent", filePath: "src\\app\\components\\experience\\experience.component.ts", lineNumber: 4 });
+  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(ExperienceComponent, { className: "ExperienceComponent", filePath: "src\\app\\components\\experience\\experience.component.ts", lineNumber: 17 });
 })();
 
 // src/app/components/contact/contact.component.ts
