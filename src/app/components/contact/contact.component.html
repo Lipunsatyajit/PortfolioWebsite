@@ -1,0 +1,55 @@
+<section id="contact">
+  <div class="section-head">
+    <div>
+      <h2>Contact</h2>
+      <p>Simple contact form + direct links. Keep it clean and professional.</p>
+    </div>
+  </div>
+
+  <div class="card contact-card">
+    <div class="grid-2">
+      <div class="tile">
+        <h3>Let's build something</h3>
+        <p>Tell me about your product, timeline, and what you need help with.</p>
+        <div class="tag-row">
+          <span class="tag">Angular SSR</span>
+          <span class="tag">Performance</span>
+          <span class="tag">UI/UX</span>
+        </div>
+        <div style="margin-top:12px; color: var(--muted);">
+          <div><b>Email:</b> satyajitsutar32&#64;gmail.com</div>
+          <div><b>Location:</b> Hyderabad</div>
+          <div><b>Response:</b> within 24 hours</div>
+        </div>
+      </div>
+
+      <div class="tile">
+        <h3>Send a message</h3>
+        <form class="form" (submit)="onSubmit($event)">
+          <label class="field">
+            <span>Name</span>
+            <input class="input" placeholder="Your name" />
+          </label>
+
+          <label class="field">
+            <span>Email</span>
+            <input class="input" placeholder="you@email.com" />
+          </label>
+
+          <label class="field" style="grid-column: 1 / -1;">
+            <span>Subject</span>
+            <input class="input" placeholder="Project / Job / Question" />
+          </label>
+
+          <label class="field" style="grid-column: 1 / -1;">
+            <span>Message</span>
+            <textarea class="textarea" placeholder="Write your message..."></textarea>
+          </label>
+
+          <button class="btn btn-primary" type="submit" style="grid-column: 1 / -1; height: 46px;">Send</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
