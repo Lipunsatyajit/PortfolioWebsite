@@ -8,12 +8,12 @@
 
   <div class="card" style="padding: 18px;">
     <div class="timeline">
-      <div class="step">
+      <div class="step" *ngFor="let exp of experiences">
         <div class="dot" aria-hidden="true"></div>
         <div>
-          <h4>Angular Developer</h4>
-          <div class="meta">1.6 Years • Angular • SaaS / ERP</div>
-          <p>Worked on REval ERP SaaS application involving planning modules, forms, validations, and UI enhancements.</p>
+          <h4>{{ exp.role }}</h4>
+          <div class="meta">{{ exp.duration }} • {{ exp.technologies }}</div>
+          <p>{{ exp.description }}</p>
         </div>
       </div>
     </div>
