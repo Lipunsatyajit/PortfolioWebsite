@@ -41056,7 +41056,7 @@ var ExperienceComponent = class _ExperienceComponent {
   static \u0275fac = function ExperienceComponent_Factory(__ngFactoryType__) {
     return new (__ngFactoryType__ || _ExperienceComponent)();
   };
-  static \u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _ExperienceComponent, selectors: [["app-experience"]], standalone: true, features: [\u0275\u0275StandaloneFeature], decls: 27, vars: 0, consts: [["id", "experience"], [1, "section-head"], [1, "card", 2, "padding", "18px"], [1, "timeline"], [1, "step"], ["aria-hidden", "true", 1, "dot"], [1, "meta"]], template: function ExperienceComponent_Template(rf, ctx) {
+  static \u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _ExperienceComponent, selectors: [["app-experience"]], standalone: true, features: [\u0275\u0275StandaloneFeature], decls: 18, vars: 0, consts: [["id", "experience"], [1, "section-head"], [1, "card", 2, "padding", "18px"], [1, "timeline"], [1, "step"], ["aria-hidden", "true", 1, "dot"], [1, "meta"]], template: function ExperienceComponent_Template(rf, ctx) {
     if (rf & 1) {
       \u0275\u0275elementStart(0, "section", 0)(1, "div", 1)(2, "div")(3, "h2");
       \u0275\u0275text(4, "Experience");
@@ -41074,17 +41074,6 @@ var ExperienceComponent = class _ExperienceComponent {
       \u0275\u0275elementEnd();
       \u0275\u0275elementStart(16, "p");
       \u0275\u0275text(17, "Worked on REval ERP SaaS application involving planning modules, forms, validations, and UI enhancements.");
-      \u0275\u0275elementEnd()()();
-      \u0275\u0275elementStart(18, "div", 4);
-      \u0275\u0275element(19, "div", 5);
-      \u0275\u0275elementStart(20, "div")(21, "h4");
-      \u0275\u0275text(22, "Dummy Experience");
-      \u0275\u0275elementEnd();
-      \u0275\u0275elementStart(23, "div", 6);
-      \u0275\u0275text(24, "Placeholder");
-      \u0275\u0275elementEnd();
-      \u0275\u0275elementStart(25, "p");
-      \u0275\u0275text(26, "Additional experience can be updated later.");
       \u0275\u0275elementEnd()()()()()();
     }
   }, encapsulation: 2 });
