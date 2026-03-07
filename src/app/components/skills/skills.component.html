@@ -1,41 +1,37 @@
 <section id="skills">
-  <div class="section-head">
+  <div class="section-head" [@headerReveal]="sectionState()">
     <div>
       <h2>Skills</h2>
-      <p>Core frontend skills and frameworks.</p>
+      <p>Core competencies and tools I use to build production Angular applications.</p>
     </div>
   </div>
 
-  <div class="grid-3">
-    <div class="tile">
-      <h3>Frontend</h3>
-      <p>Strong foundation in UI development and responsive design.</p>
-      <div class="tag-row">
-        <span class="tag">Angular</span>
-        <span class="tag">HTML</span>
-        <span class="tag">CSS</span>
-        <span class="tag">JavaScript</span>
+  <div class="grid-3 skills-grid" [@cardsReveal]="sectionState()">
+    <div class="skill-card tile" *ngFor="let cat of categories; let ci = index">
+      <div class="skill-card-header">
+        <span class="skill-icon" aria-hidden="true">{{ cat.icon }}</span>
+        <div>
+          <h3>{{ cat.title }}</h3>
+          <p>{{ cat.desc }}</p>
+        </div>
       </div>
-    </div>
 
-    <div class="tile">
-      <h3>Framework & Tools</h3>
-      <p>Modern Angular practices with clean architecture.</p>
-      <div class="tag-row">
-        <span class="tag">Angular</span>
-        <span class="tag">TypeScript</span>
-        <span class="tag">RxJS</span>
-        <span class="tag">Git</span>
-      </div>
-    </div>
-
-    <div class="tile">
-      <h3>Others</h3>
-      <p>Additional skills </p>
-      <div class="tag-row">
-        <span class="tag">REST API</span>
-        <span class="tag">UI Debugging</span>
-        <span class="tag">Performance</span>
+      <div class="skill-bars">
+        <div class="skill-bar-item" *ngFor="let skill of cat.skills; let si = index">
+          <div class="skill-bar-meta">
+            <span class="skill-name">{{ skill.name }}</span>
+            <span class="skill-pct">{{ skill.level }}%</span>
+          </div>
+          <div class="skill-bar-track">
+            <div
+              class="skill-bar-fill"
+              [class.visible]="barsVisible()"
+              [style.background]="'linear-gradient(90deg, ' + skill.color + 'cc, ' + skill.color + '66)'"
+              [style.--target-width]="skill.level + '%'"
+              [style.transition-delay]="(ci * 0.15 + si * 0.08) + 's'"
+            ></div>
+          </div>
+        </div>
       </div>
     </div>
   </div>

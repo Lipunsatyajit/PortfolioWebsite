@@ -1,5 +1,9 @@
+<!-- Scroll progress bar (top of viewport) -->
+<div class="scroll-progress-bar" [style.width.%]="scrollProgress()" aria-hidden="true"></div>
+
 <app-navbar
   [mobileMenuOpen]="mobileMenuOpen()"
+  [activeSection]="activeSection()"
   (themeToggle)="toggleTheme()"
   (menuToggle)="toggleMobileMenu()"
   (menuClose)="closeMobileMenu()">
@@ -14,3 +18,13 @@
   <app-contact></app-contact>
   <app-footer [year]="year"></app-footer>
 </main>
+
+<!-- Scroll-to-top FAB with Angular animation -->
+<button
+  class="scroll-top-btn"
+  aria-label="Scroll to top"
+  title="Back to top"
+  [@scrollTopBtn]="showScrollTop() ? 'visible' : 'hidden'"
+  (click)="scrollToTop()">
+  &#8679;
+</button>

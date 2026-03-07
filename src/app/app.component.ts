@@ -1,5 +1,10 @@
-import { AfterViewInit, Component, DestroyRef, effect, inject, signal } from '@angular/core';
-import { DOCUMENT } from '@angular/common';
+import {
+  AfterViewInit, Component, DestroyRef, effect, inject, signal
+} from '@angular/core';
+import { CommonModule, DOCUMENT } from '@angular/common';
+import {
+  trigger, state, style, animate, transition
+} from '@angular/animations';
 
 import { NavbarComponent } from './components/navbar/navbar.component';
 import { HeroComponent } from './components/hero/hero.component';
@@ -16,6 +21,7 @@ type Theme = 'dark' | 'light';
   selector: 'app-root',
   standalone: true,
   imports: [
+    CommonModule,
     NavbarComponent,
     HeroComponent,
     AboutComponent,
@@ -26,45 +32,90 @@ type Theme = 'dark' | 'light';
     FooterComponent,
   ],
   templateUrl: './app.component.html',
+  animations: [
+    trigger('scrollTopBtn', [
+      state('hidden', style({ opacity: 0, transform: 'scale(0.6) translateY(12px)', pointerEvents: 'none' })),
+      state('visible', style({ opacity: 1, transform: 'scale(1) translateY(0)', pointerEvents: 'auto' })),
+      transition('hidden <=> visible', animate('0.28s cubic-bezier(0.2, 0.9, 0.2, 1)'))
+    ])
+  ]
 })
 export class AppComponent implements AfterViewInit {
   private readonly doc = inject(DOCUMENT);
   private readonly destroyRef = inject(DestroyRef);
 
-  readonly theme = signal<Theme>('dark');
+  readonly theme         = signal<Theme>('dark');
   readonly mobileMenuOpen = signal(false);
+  readonly showScrollTop  = signal(false);
+  readonly scrollProgress = signal(0);
+  readonly activeSection  = signal('');
 
   readonly year = new Date().getFullYear();
 
   constructor() {
-    // Apply theme on <body data-theme="...">
     effect(() => {
       const t = this.theme();
       this.doc.body.setAttribute('data-theme', t);
     });
-
-    // Mark that JS is running (keeps reveal behavior consistent with the mock)
     this.doc.body.classList.add('js');
   }
 
-  toggleTheme(): void {
-    this.theme.update((t) => (t === 'dark' ? 'light' : 'dark'));
-  }
+  toggleTheme(): void   { this.theme.update((t) => (t === 'dark' ? 'light' : 'dark')); }
+  toggleMobileMenu(): void { this.mobileMenuOpen.update((v) => !v); }
+  closeMobileMenu(): void  { this.mobileMenuOpen.set(false); }
 
-  toggleMobileMenu(): void {
-    this.mobileMenuOpen.update((v) => !v);
-  }
-
-  closeMobileMenu(): void {
-    this.mobileMenuOpen.set(false);
+  scrollToTop(): void {
+    this.doc.defaultView?.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   ngAfterViewInit(): void {
     this.setupAnchorScroll();
     this.setupRevealAnimations();
     this.setupTiltOnHeroCards();
+    this.setupCursorSpotlight();
+    this.setupScrollTracking();
+    this.setupActiveSectionObserver();
   }
 
+  // ── Scroll tracking: progress bar + scroll-to-top visibility ──────────────
+  private setupScrollTracking(): void {
+    const win = this.doc.defaultView;
+    if (!win) return;
+
+    const onScroll = () => {
+      const scrollY = win.scrollY;
+      const docH = this.doc.documentElement.scrollHeight - win.innerHeight;
+      this.showScrollTop.set(scrollY > 350);
+      this.scrollProgress.set(docH > 0 ? Math.min(100, Math.round((scrollY / docH) * 100)) : 0);
+    };
+
+    win.addEventListener('scroll', onScroll, { passive: true });
+    this.destroyRef.onDestroy(() => win.removeEventListener('scroll', onScroll));
+  }
+
+  // ── Active section highlighting ────────────────────────────────────────────
+  private setupActiveSectionObserver(): void {
+    const win = this.doc.defaultView;
+    if (!win || !('IntersectionObserver' in win)) return;
+
+    const sectionIds = ['about', 'skills', 'projects', 'experience', 'contact'];
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          this.activeSection.set(entry.target.id);
+        }
+      });
+    }, { threshold: 0.35, rootMargin: '-10% 0px -50% 0px' });
+
+    sectionIds.forEach((id) => {
+      const el = this.doc.getElementById(id);
+      if (el) io.observe(el);
+    });
+
+    this.destroyRef.onDestroy(() => io.disconnect());
+  }
+
+  // ── Smooth anchor scroll ───────────────────────────────────────────────────
   private setupAnchorScroll(): void {
     const handler = (e: Event) => {
       const target = e.target as HTMLElement | null;
@@ -83,45 +134,16 @@ export class AppComponent implements AfterViewInit {
     };
 
     this.doc.addEventListener('click', handler, { passive: false });
-
-    this.destroyRef.onDestroy(() => {
-      this.doc.removeEventListener('click', handler as any);
-    });
+    this.destroyRef.onDestroy(() => this.doc.removeEventListener('click', handler as any));
   }
 
+  // ── CSS reveal animations (elements NOT handled by Angular component triggers) ──
   private setupRevealAnimations(): void {
     const prefersReduced = this.doc.defaultView?.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches ?? false;
 
-    const markStagger = (selector: string) => {
-      this.doc.querySelectorAll(selector).forEach((wrap) => {
-        wrap.classList.add('stagger');
-        Array.from(wrap.children).forEach((child, i) => {
-          child.classList.add('reveal', 'reveal-up');
-          (child as HTMLElement).style.setProperty('--d', `${i * 80}ms`);
-        });
-      });
-    };
-
-    markStagger('.grid-3');
-    markStagger('.mini-grid');
-
-    // Special handling for About section grid-2 with directional reveals
-    this.doc.querySelectorAll('#about .grid-2').forEach((wrap) => {
-      const children = Array.from(wrap.children);
-      children.forEach((child, i) => {
-        child.classList.add('reveal');
-        // Alternate: even index = left, odd = right
-        if (i % 2 === 0) {
-          child.classList.add('reveal-left');
-        } else {
-          child.classList.add('reveal-right');
-        }
-        (child as HTMLElement).style.setProperty('--d', `${i * 100}ms`);
-      });
-    });
-
-    // Keep generic grid-2 handling for other sections
-    this.doc.querySelectorAll('.grid-2:not(#about .grid-2)').forEach((wrap) => {
+    // Only mark elements that are NOT already animated by their component's Angular animations.
+    // Hero section sub-elements (component uses Angular triggers, but these are extra details)
+    this.doc.querySelectorAll('.mini-grid').forEach((wrap) => {
       wrap.classList.add('stagger');
       Array.from(wrap.children).forEach((child, i) => {
         child.classList.add('reveal', 'reveal-up');
@@ -129,73 +151,10 @@ export class AppComponent implements AfterViewInit {
       });
     });
 
-    const revealSingles = [
-      '.hero-left', '.hero-right',
-      '.section-head:not(#about .section-head)',
-      '.card.contact-card',
-      'footer .foot'
-    ];
+    // Footer
+    this.doc.querySelectorAll('footer .foot').forEach((el) => el.classList.add('reveal', 'reveal-up'));
 
-    revealSingles.forEach((sel) => {
-      this.doc.querySelectorAll(sel).forEach((el) => el.classList.add('reveal', 'reveal-up'));
-    });
-
-    // About section-head with zoom effect
-    this.doc.querySelectorAll('#about .section-head').forEach((el) => {
-      el.classList.add('reveal', 'reveal-zoom');
-    });
-
-    this.doc.querySelectorAll('.timeline .step').forEach((el, i) => {
-      el.classList.add('reveal', 'reveal-left');
-      (el as HTMLElement).style.setProperty('--d', `${i * 90}ms`);
-    });
-
-    // Nested animation for contact details in About section
-    this.doc.querySelectorAll('#about .contact-details-list .contact-item').forEach((item, i) => {
-      item.classList.add('reveal', 'reveal-left');
-      // Base delay: parent tile (100ms) + settle time (400ms) + stagger
-      (item as HTMLElement).style.setProperty('--d', `${100 + 400 + (i * 60)}ms`);
-    });
-
-    // Hero section elements with stagger
-    this.doc.querySelectorAll('.kicker').forEach((el) => {
-      el.classList.add('reveal', 'reveal-down');
-      (el as HTMLElement).style.setProperty('--d', '0ms');
-    });
-
-    this.doc.querySelectorAll('h1').forEach((el) => {
-      el.classList.add('reveal', 'reveal-up');
-      (el as HTMLElement).style.setProperty('--d', '100ms');
-    });
-
-    this.doc.querySelectorAll('.sub').forEach((el) => {
-      el.classList.add('reveal', 'reveal-up');
-      (el as HTMLElement).style.setProperty('--d', '200ms');
-    });
-
-    // Hero CTA buttons
-    this.doc.querySelectorAll('.hero-cta').forEach((cta) => {
-      Array.from(cta.children).forEach((btn, i) => {
-        btn.classList.add('reveal', 'reveal-up');
-        (btn as HTMLElement).style.setProperty('--d', `${300 + (i * 80)}ms`);
-      });
-    });
-
-    // Pills with stagger
-    this.doc.querySelectorAll('.meta-row').forEach((row) => {
-      Array.from(row.children).forEach((pill, i) => {
-        pill.classList.add('reveal', 'reveal-zoom');
-        (pill as HTMLElement).style.setProperty('--d', `${400 + (i * 70)}ms`);
-      });
-    });
-
-    // Profile cards in hero-right
-    this.doc.querySelectorAll('.profile').forEach((el, i) => {
-      el.classList.add('reveal', 'reveal-right');
-      (el as HTMLElement).style.setProperty('--d', `${i * 100}ms`);
-    });
-
-    // Brand badge
+    // Hero section static reveals (component handles main ones via Angular anim)
     this.doc.querySelectorAll('.brand-badge').forEach((el) => {
       el.classList.add('reveal', 'reveal-zoom');
       (el as HTMLElement).style.setProperty('--d', '100ms');
@@ -207,9 +166,7 @@ export class AppComponent implements AfterViewInit {
     }
 
     const win = this.doc.defaultView;
-    if (!win) return;
-
-    if (!('IntersectionObserver' in win)) {
+    if (!win || !('IntersectionObserver' in win)) {
       this.doc.querySelectorAll('.reveal').forEach((el) => el.classList.add('in-view'));
       return;
     }
@@ -224,10 +181,24 @@ export class AppComponent implements AfterViewInit {
     }, { threshold: 0.15, rootMargin: '0px 0px -10% 0px' });
 
     this.doc.querySelectorAll('.reveal').forEach((el) => io.observe(el));
-
     this.destroyRef.onDestroy(() => io.disconnect());
   }
 
+  // ── Cursor spotlight: CSS vars --cx/--cy track mouse position ────────────
+  private setupCursorSpotlight(): void {
+    const win = this.doc.defaultView;
+    if (!win) return;
+
+    const onMove = (e: MouseEvent) => {
+      this.doc.documentElement.style.setProperty('--cx', `${e.clientX}px`);
+      this.doc.documentElement.style.setProperty('--cy', `${e.clientY}px`);
+    };
+
+    win.addEventListener('mousemove', onMove, { passive: true });
+    this.destroyRef.onDestroy(() => win.removeEventListener('mousemove', onMove));
+  }
+
+  // ── 3-D tilt on hero cards + all tiles/projects ───────────────────────────
   private setupTiltOnHeroCards(): void {
     const win = this.doc.defaultView;
     if (!win) return;
@@ -235,7 +206,9 @@ export class AppComponent implements AfterViewInit {
     const prefersReduced = win.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches ?? false;
     if (prefersReduced) return;
 
-    const targets = this.doc.querySelectorAll('.hero-left, .hero-right');
+    // Hero cards get stronger tilt; all other tiles get a softer tilt
+    const heroTargets  = this.doc.querySelectorAll('.hero-left, .hero-right');
+    const softTargets  = this.doc.querySelectorAll('.tile:not(.contact-info-tile), .project, .skill-card');
 
     const onMove = (card: Element, e: MouseEvent) => {
       const r = (card as HTMLElement).getBoundingClientRect();
@@ -253,17 +226,22 @@ export class AppComponent implements AfterViewInit {
 
     const cleanups: Array<() => void> = [];
 
-    targets.forEach((card) => {
-      const htmlCard = card as HTMLElement;
-      const move = (e: MouseEvent) => onMove(card, e);
-      const leave = () => onLeave(card);
-      htmlCard.addEventListener('mousemove', move);
-      htmlCard.addEventListener('mouseleave', leave);
-      cleanups.push(() => {
-        htmlCard.removeEventListener('mousemove', move);
-        htmlCard.removeEventListener('mouseleave', leave);
+    const attachTilt = (nodeList: NodeList) => {
+      nodeList.forEach((card) => {
+        const htmlCard = card as HTMLElement;
+        const move  = (e: MouseEvent) => onMove(card as Element, e);
+        const leave = () => onLeave(card as Element);
+        htmlCard.addEventListener('mousemove', move);
+        htmlCard.addEventListener('mouseleave', leave);
+        cleanups.push(() => {
+          htmlCard.removeEventListener('mousemove', move);
+          htmlCard.removeEventListener('mouseleave', leave);
+        });
       });
-    });
+    };
+
+    attachTilt(heroTargets);
+    attachTilt(softTargets);
 
     this.destroyRef.onDestroy(() => cleanups.forEach((fn) => fn()));
   }

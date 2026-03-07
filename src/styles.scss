@@ -132,6 +132,7 @@
     }
 
     .hamburger{ display:none; }
+    .mobile-menu{ display:none; } /* Hidden globally; shown only in mobile via media query */
 
     /* ------------------------------
        HERO
@@ -411,16 +412,63 @@
 
     /* Projects cards */
     .project{
-      padding: 18px;
+      padding: 20px;
       border-radius: var(--radius);
       border: 1px solid var(--stroke);
       background: rgba(255,255,255,.04);
       display:flex;
       flex-direction:column;
-      gap: 10px;
-      min-height: auto; /* avoid extra blank space inside cards */
+      gap: 12px;
+      min-height: auto;
       position:relative;
       overflow:hidden;
+      /* Angular @cardHover drives transform/box-shadow */
+      will-change: transform;
+    }
+
+    /* Animated top accent bar */
+    .project-accent-bar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 3px;
+      width: 0%;
+      border-radius: 0 999px 999px 0;
+      transition: width 0.45s cubic-bezier(0.2, 0.9, 0.2, 1);
+    }
+    .project-accent-bar.bar-active {
+      width: 100%;
+    }
+
+    /* Hover shimmer sweep on project cards */
+    .project::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        105deg,
+        transparent 30%,
+        rgba(255,255,255,0.06) 50%,
+        transparent 70%
+      );
+      opacity: 0;
+      transform: translateX(-100%);
+      transition: opacity 0.1s;
+      pointer-events: none;
+    }
+    .project:hover::after {
+      opacity: 1;
+      transform: translateX(100%);
+      transition: transform 0.55s cubic-bezier(0.2, 0.9, 0.2, 1), opacity 0.1s;
+    }
+
+    /* Tag lit state on card hover */
+    .tag.tag-lit {
+      background: rgba(124, 92, 255, 0.12);
+      border-color: rgba(124, 92, 255, 0.35);
+      color: var(--text);
+      transform: translateY(-1px) scale(1.04);
+      transition: all 0.25s ease;
     }
     .project:before{
       content:"";
@@ -436,21 +484,51 @@
     }
 
     .project .top{
-      display:flex; align-items:center; justify-content:space-between; gap: 12px;
+      display:flex; align-items:center; gap: 12px;
       position: relative;
       z-index: 1;
     }
     .badge{
       font-family: var(--mono);
-      font-size: 12px;
-      padding: 7px 10px;
+      font-size: 11px;
+      padding: 5px 10px;
       border-radius: 999px;
       border: 1px solid var(--stroke);
       background: rgba(255,255,255,.04);
       color: var(--muted);
     }
     .project h3{ margin: 0; font-size: 16px; position: relative; z-index: 1; }
-    .project p{ margin: 0; color: var(--muted); font-size: 14px; position: relative; z-index: 1; }
+    .project p{ margin: 0; color: var(--muted); font-size: 14px; line-height:1.6; position: relative; z-index: 1; }
+
+    /* Project highlights list */
+    .project-highlights {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      position: relative;
+      z-index: 1;
+    }
+    .project-highlights li {
+      font-size: 13px;
+      color: var(--muted);
+      padding-left: 16px;
+      position: relative;
+      line-height: 1.5;
+    }
+    .project-highlights li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 7px;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      opacity: 0.8;
+    }
 
     .project .actions{ display:flex; gap: 10px; margin-top: auto; position: relative; z-index: 1; }
     .link{
@@ -574,6 +652,106 @@
       100%{ box-shadow: 0 0 0 6px rgba(45,212,191,.10); }
     }
     .k-dot{ animation: pulse 2.2s ease-in-out infinite; }
+
+    /* ==============================
+       CURSOR SPOTLIGHT
+       (tracks --cx / --cy CSS vars set by app.component.ts)
+       ============================== */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(
+        520px circle at var(--cx, 50%) var(--cy, 50%),
+        rgba(124, 92, 255, 0.07),
+        transparent 42%
+      );
+      z-index: 0;
+      pointer-events: none;
+    }
+    [data-theme="light"] body::after {
+      background: radial-gradient(
+        520px circle at var(--cx, 50%) var(--cy, 50%),
+        rgba(124, 92, 255, 0.05),
+        transparent 42%
+      );
+    }
+
+    /* ==============================
+       ANIMATED ACCENT GRADIENT
+       ============================== */
+    @keyframes gradientShift {
+      0%   { background-position: 0%   50%; }
+      50%  { background-position: 100% 50%; }
+      100% { background-position: 0%   50%; }
+    }
+
+    .accent {
+      background: linear-gradient(
+        270deg,
+        var(--brand), var(--brand-2), var(--ok), var(--brand)
+      );
+      background-size: 300% 300%;
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      animation: gradientShift 4s ease infinite;
+    }
+
+    /* ==============================
+       SKILL BAR SHIMMER SWEEP
+       ============================== */
+    .skill-bar-fill {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .skill-bar-fill.visible::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 60%;
+      height: 100%;
+      background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.45),
+        transparent
+      );
+      animation: shimmerSweep 0.9s 0.8s ease-out forwards;
+    }
+
+    @keyframes shimmerSweep {
+      from { left: -60%; }
+      to   { left: 130%;  }
+    }
+
+    /* ==============================
+       BUTTON RIPPLE ON CLICK
+       ============================== */
+    .btn {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: rgba(255, 255, 255, 0.18);
+      opacity: 0;
+      transform: scale(0.5);
+      transition: transform 0.4s ease, opacity 0.4s ease;
+      pointer-events: none;
+    }
+
+    .btn:active::after {
+      transform: scale(2.2);
+      opacity: 1;
+      transition: 0s;
+    }
 
     /* === ADDITIONAL ANIMATIONS === */
 
@@ -1097,12 +1275,367 @@
     @media (max-width: 860px){
       .nav-links{ display:none; }
       .hamburger{ display:inline-flex; }
-      .mobile-menu{ display:none; padding: 12px 0 18px; }
-      .mobile-menu.open{ display:block; }
-      .mobile-menu a{ display:block; padding: 10px 10px; border-radius: 12px; color: var(--muted); font-weight: 700; }
+      .mobile-menu{ display:none; padding: 12px 0 18px; border-top: 1px solid var(--stroke); }
+      .mobile-menu.open{
+        display: block;
+        animation: mobileMenuIn 0.22s cubic-bezier(0.2, 0.9, 0.2, 1);
+      }
+      .mobile-menu a{
+        display: block;
+        padding: 12px 14px;
+        border-radius: 12px;
+        color: var(--muted);
+        font-weight: 700;
+        font-size: 15px;
+        transition: background .15s ease, color .15s ease, padding-left .15s ease;
+      }
       .mobile-menu a:hover{ background: var(--surface); color: var(--text); }
+    }
+
+    @keyframes mobileMenuIn {
+      from { opacity: 0; transform: translateY(-8px); }
+      to   { opacity: 1; transform: translateY(0); }
     }
 
     @media (prefers-reduced-motion: reduce){
       *{ transition:none !important; scroll-behavior:auto !important; }
+    }
+
+    /* ==============================
+       SKILLS SECTION
+       ============================== */
+    .skills-grid { align-items: stretch; }
+
+    .skill-card {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .skill-card-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+    }
+
+    .skill-icon {
+      font-size: 28px;
+      line-height: 1;
+      flex-shrink: 0;
+      width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 14px;
+      background: linear-gradient(135deg, rgba(124,92,255,.12), rgba(35,194,255,.08));
+      border: 1px solid var(--stroke);
+    }
+
+    .skill-card-header h3 { margin: 0 0 4px; font-size: 15px; }
+    .skill-card-header p  { margin: 0; font-size: 13px; color: var(--muted); line-height: 1.5; }
+
+    .skill-bars {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .skill-bar-item {}
+
+    .skill-bar-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+
+    .skill-name {
+      font-size: 13px;
+      font-weight: 650;
+      color: var(--text);
+    }
+
+    .skill-pct {
+      font-size: 12px;
+      font-family: var(--mono);
+      color: var(--muted);
+    }
+
+    .skill-bar-track {
+      height: 6px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.07);
+      overflow: hidden;
+      border: 1px solid var(--stroke);
+    }
+
+    .skill-bar-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: 999px;
+      transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .skill-bar-fill.visible {
+      width: var(--target-width);
+    }
+
+    /* ==============================
+       ABOUT STATS
+       ============================== */
+    .about-stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .stat-item {
+      padding: 18px 16px;
+      border-radius: var(--radius);
+      border: 1px solid var(--stroke);
+      background: rgba(255,255,255,.04);
+      text-align: center;
+      transition: transform .2s ease, background .2s ease;
+    }
+
+    .stat-item:hover {
+      background: var(--surface);
+      transform: translateY(-3px);
+    }
+
+    .stat-value {
+      font-size: 28px;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      line-height: 1.1;
+    }
+
+    .stat-label {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 4px;
+      font-family: var(--mono);
+    }
+
+    /* ==============================
+       EXPERIENCE SECTION
+       ============================== */
+    .exp-card { padding: 22px; }
+
+    .step-body { width: 100%; }
+
+    .step-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 8px;
+    }
+
+    .step h4 { margin: 0; font-size: 17px; }
+
+    .exp-company {
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 3px;
+    }
+
+    .exp-badge {
+      flex-shrink: 0;
+      font-size: 11px;
+      font-family: var(--mono);
+      padding: 6px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--stroke);
+      background: rgba(255,255,255,.04);
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    .step p { margin: 10px 0 0; color: var(--muted); font-size: 14px; line-height: 1.65; }
+
+    .highlight-list {
+      margin: 14px 0 0;
+      padding: 0;
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .highlight-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 13.5px;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    .hl-dot {
+      flex-shrink: 0;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      margin-top: 6px;
+    }
+
+    /* ==============================
+       CONTACT INFO PANEL
+       ============================== */
+    .contact-info-tile { display: flex; flex-direction: column; gap: 16px; }
+    .contact-info-tile h3 { margin: 0; }
+    .contact-info-tile > p { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.6; }
+
+    .contact-info-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .contact-info-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1px solid var(--stroke);
+      background: rgba(255,255,255,.03);
+      transition: background .2s ease, transform .2s ease, border-color .2s ease;
+    }
+
+    .contact-info-row:hover {
+      background: var(--surface);
+      transform: translateX(4px);
+      border-color: rgba(124,92,255,.2);
+    }
+
+    .ci-icon {
+      font-size: 18px;
+      line-height: 1;
+      margin-top: 2px;
+      flex-shrink: 0;
+    }
+
+    .ci-label {
+      font-size: 11px;
+      color: var(--muted-2);
+      font-family: var(--mono);
+      margin-bottom: 2px;
+    }
+
+    .ci-value {
+      font-size: 14px;
+      color: var(--text);
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    a.ci-value:hover { color: var(--brand); }
+
+    /* ==============================
+       SCROLL PROGRESS BAR
+       ============================== */
+    .scroll-progress-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--brand), var(--brand-2), var(--ok));
+      z-index: 200;
+      transition: width 0.1s linear;
+      border-radius: 0 2px 2px 0;
+      box-shadow: 0 0 10px rgba(124, 92, 255, 0.6);
+    }
+
+    /* ==============================
+       SCROLL-TO-TOP BUTTON
+       ============================== */
+    .scroll-top-btn {
+      position: fixed;
+      bottom: 28px;
+      right: 24px;
+      z-index: 100;
+      width: 48px;
+      height: 48px;
+      border-radius: 16px;
+      border: 1px solid var(--stroke);
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      color: white;
+      font-size: 22px;
+      font-weight: 700;
+      line-height: 1;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 24px rgba(124, 92, 255, 0.35);
+      transition: box-shadow 0.2s ease, transform 0.2s ease;
+    }
+
+    .scroll-top-btn:hover {
+      box-shadow: 0 12px 32px rgba(124, 92, 255, 0.5);
+      transform: translateY(-3px) scale(1.06);
+    }
+
+    /* ==============================
+       ACTIVE NAV LINK
+       ============================== */
+    .nav-links a.nav-active,
+    .mobile-menu a.nav-active {
+      color: var(--text);
+      background: var(--surface);
+      position: relative;
+    }
+
+    .nav-links a.nav-active::after {
+      content: '';
+      position: absolute;
+      bottom: 2px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 20px;
+      height: 3px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--brand), var(--brand-2));
+    }
+
+    .mobile-menu a.nav-active {
+      color: var(--text);
+      background: var(--surface);
+      border-left: 3px solid var(--brand);
+      padding-left: 14px;
+    }
+
+    /* ==============================
+       RESPONSIVE — new elements
+       ============================== */
+    @media (max-width: 980px) {
+      .about-stats { grid-template-columns: repeat(2, 1fr); }
+      .step-header { flex-direction: column; gap: 8px; }
+      .exp-badge { align-self: flex-start; }
+      .skill-card-header { gap: 12px; }
+      .skill-icon { width: 42px; height: 42px; font-size: 22px; }
+      .scroll-top-btn { bottom: 20px; right: 16px; width: 44px; height: 44px; font-size: 20px; }
+    }
+
+    @media (max-width: 480px) {
+      .about-stats { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+      .stat-value { font-size: 22px; }
+      .stat-item { padding: 14px 12px; }
+      .stat-label { font-size: 10.5px; }
+      .skill-bars { gap: 12px; }
+      .highlight-list li { font-size: 12.5px; }
+      .contact-info-row { padding: 10px 12px; }
+      .ci-value { font-size: 13px; }
+      .exp-card { padding: 16px; }
+      .exp-badge { font-size: 10px; padding: 4px 10px; }
+      /* Reduce scroll-to-top btn overlap on small screens */
+      .scroll-top-btn { bottom: 16px; right: 12px; }
     }

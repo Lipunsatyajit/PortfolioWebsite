@@ -1,55 +1,94 @@
 <section id="contact">
-  <div class="section-head">
+  <div class="section-head" [@headerReveal]="sectionState()">
     <div>
       <h2>Contact</h2>
-      <p>Simple contact form + direct links. Keep it clean and professional.</p>
+      <p>Have a project or opportunity? I would love to hear from you.</p>
     </div>
   </div>
 
   <div class="card contact-card">
-    <div class="grid-2">
-      <div class="tile">
-        <h3>Let's build something</h3>
-        <p>Tell me about your product, timeline, and what you need help with.</p>
-        <div class="tag-row">
-          <span class="tag">Angular SSR</span>
-          <span class="tag">Performance</span>
-          <span class="tag">UI/UX</span>
+    <div class="grid-2" [@cardReveal]="sectionState()">
+
+      <!-- Left: Info panel -->
+      <div class="tile contact-info-tile">
+        <h3>Let's Work Together</h3>
+        <p>
+          I'm open to full-time roles, freelance contracts, and Angular consulting.
+          Drop me a message and I'll respond within 24 hours.
+        </p>
+
+        <div class="contact-info-list">
+          <div class="contact-info-row">
+            <span class="ci-icon" aria-hidden="true">&#9993;</span>
+            <div>
+              <div class="ci-label">Email</div>
+              <a class="ci-value" href="mailto:satyajitsutar32@gmail.com">satyajitsutar32&#64;gmail.com</a>
+            </div>
+          </div>
+          <div class="contact-info-row">
+            <span class="ci-icon" aria-hidden="true">&#128205;</span>
+            <div>
+              <div class="ci-label">Location</div>
+              <div class="ci-value">Hyderabad, India</div>
+            </div>
+          </div>
+          <div class="contact-info-row">
+            <span class="ci-icon" aria-hidden="true">&#9201;</span>
+            <div>
+              <div class="ci-label">Response time</div>
+              <div class="ci-value">Within 24 hours</div>
+            </div>
+          </div>
+          <div class="contact-info-row">
+            <span class="ci-icon" aria-hidden="true">&#128204;</span>
+            <div>
+              <div class="ci-label">Status</div>
+              <div class="ci-value" style="color:var(--ok); font-weight:700;">Available for hire</div>
+            </div>
+          </div>
         </div>
-        <div style="margin-top:12px; color: var(--muted);">
-          <div><b>Email:</b> satyajitsutar32&#64;gmail.com</div>
-          <div><b>Location:</b> Hyderabad</div>
-          <div><b>Response:</b> within 24 hours</div>
+
+        <div style="margin-top:18px;">
+          <div style="font-size:12px; color:var(--muted-2); margin-bottom:10px; font-family:var(--mono);">I can help with</div>
+          <div class="tag-row">
+            <span class="tag">Angular Apps</span>
+            <span class="tag">Component Libraries</span>
+            <span class="tag">Performance</span>
+            <span class="tag">UI/UX</span>
+            <span class="tag">Code Reviews</span>
+          </div>
         </div>
       </div>
 
+      <!-- Right: Form panel -->
       <div class="tile">
-        <h3>Send a message</h3>
+        <h3>Send a Message</h3>
         <form class="form" (submit)="onSubmit($event)">
           <label class="field">
             <span>Name</span>
-            <input class="input" placeholder="Your name" />
+            <input class="input" placeholder="Your full name" type="text" />
           </label>
 
           <label class="field">
             <span>Email</span>
-            <input class="input" placeholder="you@email.com" />
+            <input class="input" placeholder="you@email.com" type="email" />
           </label>
 
           <label class="field" style="grid-column: 1 / -1;">
             <span>Subject</span>
-            <input class="input" placeholder="Project / Job / Question" />
+            <input class="input" placeholder="Project inquiry / Job opportunity / Question" type="text" />
           </label>
 
           <label class="field" style="grid-column: 1 / -1;">
             <span>Message</span>
-            <textarea class="textarea" placeholder="Write your message..."></textarea>
+            <textarea class="textarea" placeholder="Tell me about your project, timeline, and what you need..."></textarea>
           </label>
 
-          <button class="btn btn-primary" type="submit" style="grid-column: 1 / -1; height: 46px;">Send</button>
+          <button class="btn btn-primary" type="submit" style="grid-column: 1 / -1; height: 48px; font-size:15px;">
+            Send Message &#9993;
+          </button>
         </form>
       </div>
     </div>
   </div>
 </section>
-

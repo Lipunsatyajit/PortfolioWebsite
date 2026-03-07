@@ -1,91 +1,92 @@
 <section class="hero">
   <div class="hero-grid">
-    <div class="card hero-left">
-      <div class="kicker">
+
+    <!-- LEFT PANEL -->
+    <div class="card hero-left" [@heroLeftAnim]="panelState()">
+      <div class="kicker hero-anim">
         <span class="k-dot" aria-hidden="true"></span>
-        Available for freelance • Angular (SSR / Performance / SEO)
+        Open to work &bull; Angular Developer &bull; Hyderabad
       </div>
 
-      <h1>
+      <h1 class="hero-anim">
         Angular Developer building
         <span class="accent">fast</span>,
-        <span class="accent">SEO-ready</span>
-        web apps.
+        <span class="accent">scalable</span>
+        web applications.
       </h1>
 
-      <p class="sub">
-        I build public-facing and enterprise Angular applications with modern Angular (standalone components, signals),
-        SSR/hydration, performance optimization, and clean UI/UX.
+      <p class="sub hero-anim">
+        I craft enterprise-grade Angular apps with standalone components, reactive forms,
+        RxJS data flows, and pixel-perfect UI — focused on performance and clean code.
       </p>
 
-      <div class="hero-cta">
+      <div class="hero-cta hero-anim">
         <a class="btn btn-primary" href="#projects">View Projects</a>
-        <a class="btn" href="#contact">Contact</a>
-        <a class="btn" href="#" (click)="$event.preventDefault()" title="Replace with your CV link">Download CV</a>
+        <a class="btn" href="#" (click)="$event.preventDefault()" title="Update with your CV link">Download CV</a>
       </div>
 
-      <div class="meta-row">
-        <span class="pill">⚡ <b>1.6 yrs</b> Experience</span>
-        <span class="pill">🅰️ <b>Angular</b></span>
-        <span class="pill">🎨 <b>HTML/CSS/JS</b></span>
-        <span class="pill">🏢 <b>ERP • SaaS</b></span>
+      <div class="meta-row hero-anim">
+        <span class="pill"><b>{{ yearsExp }} yrs</b> Angular</span>
+        <span class="pill"><b>ERP</b> &amp; SaaS</span>
+        <span class="pill"><b>TypeScript</b></span>
+        <span class="pill"><b>RxJS</b></span>
       </div>
     </div>
 
-    <aside class="card hero-right">
+    <!-- RIGHT PANEL -->
+    <aside class="card hero-right" [@heroRightAnim]="panelState()">
       <div class="profile">
         <div class="avatar">
           <img
             class="avatar-img"
             src="assets/lipunsprofile.jpg"
-            alt="Profile picture of Satyajit Sutar"
-            loading="lazy"
+            alt="Satyajit Sutar — Angular Developer"
+            loading="eager"
             decoding="async"
           />
         </div>
         <div>
-          <h3>Satyajit Sutar • Angular Developer</h3>
-          <p>Hyderabad • Angular • HTML/CSS/JS</p>
+          <h3>Satyajit Sutar</h3>
+          <p>Angular Developer &bull; Hyderabad, India</p>
         </div>
       </div>
 
-      <div class="mini-grid">
+      <div class="mini-grid" [@miniStagger]="panelState()">
         <div class="mini">
-          <div class="t">Primary Skills</div>
-          <div class="v">Angular • HTML</div>
-          <div class="code">CSS • JavaScript • TypeScript</div>
+          <div class="t">Primary Stack</div>
+          <div class="v">Angular 18</div>
+          <div class="code">TypeScript &bull; RxJS &bull; HTML/CSS</div>
         </div>
 
         <div class="mini">
-          <div class="t">Focus Areas</div>
-          <div class="v">UI • Components</div>
-          <div class="code">reusable UI • clean screens</div>
+          <div class="t">Focus</div>
+          <div class="v">UI Architecture</div>
+          <div class="code">Components &bull; Forms &bull; Performance</div>
         </div>
 
         <div class="mini">
-          <div class="t">Recent Work</div>
+          <div class="t">Recent Project</div>
           <div class="v">REval ERP</div>
-          <div class="code">forms • tables • validations</div>
+          <div class="code">Planning &bull; Forms &bull; RBAC</div>
         </div>
 
         <div class="mini">
-          <div class="t">Open To</div>
+          <div class="t">Available For</div>
           <div class="v">Full-time / Freelance</div>
-          <div class="code">frontend • angular • ui</div>
+          <div class="code">Angular &bull; Frontend &bull; UI</div>
         </div>
       </div>
 
       <div class="tile">
-        <h3>Quick Links</h3>
-        <p>Replace with your real links.</p>
-        <div class="tag-row">
-          <a class="tag" href="#" (click)="$event.preventDefault()">GitHub</a>
-          <a class="tag" href="#" (click)="$event.preventDefault()">LinkedIn</a>
-          <a class="tag" href="#" (click)="$event.preventDefault()">Resume</a>
-          <a class="tag" href="#" (click)="$event.preventDefault()">Email</a>
+        <h3>Connect with me</h3>
+        <p style="font-size:13px; color:var(--muted);">Replace with your actual profile links.</p>
+        <div class="tag-row" style="margin-top:10px;">
+          <a class="tag" href="#" (click)="$event.preventDefault()">&#128279; GitHub</a>
+          <a class="tag" href="#" (click)="$event.preventDefault()">&#128101; LinkedIn</a>
+          <a class="tag" href="#" (click)="$event.preventDefault()">&#128196; Resume</a>
+          <a class="tag" href="#contact" >&#9993; Email</a>
         </div>
       </div>
     </aside>
   </div>
 </section>
-

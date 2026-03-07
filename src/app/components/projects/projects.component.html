@@ -1,61 +1,53 @@
 <section id="projects">
-  <div class="section-head">
+  <div class="section-head" [@headerReveal]="sectionState()">
     <div>
       <h2>Projects</h2>
-      <p>Selected real-world project experience (you can update details later).</p>
+      <p>Real-world Angular applications built for enterprise, SaaS, and e-commerce products.</p>
     </div>
   </div>
 
-  <div class="grid-3">
-    <article class="project">
-      <div class="top">
-        <span class="badge">Enterprise</span>
-        <span class="badge">ERP</span>
-      </div>
-      <h3>REval ERP</h3>
-      <p>ERP application UI with planning modules, forms, validations and role-based actions.</p>
-      <div class="tag-row">
-        <span class="tag">Angular</span>
-        <span class="tag">Forms</span>
-        <span class="tag">Tables</span>
-        <span class="tag">UI Fixes</span>
-      </div>
-      <div class="actions">
-        <a class="link" href="#" (click)="$event.preventDefault()">Project Details</a>
-      </div>
-    </article>
+  <div class="grid-3" [@projectsReveal]="sectionState()">
+    <article
+      class="project"
+      *ngFor="let p of projects; let i = index"
+      [@cardHover]="hoveredIndex() === i ? 'hovered' : 'idle'"
+      (mouseenter)="hoveredIndex.set(i)"
+      (mouseleave)="hoveredIndex.set(-1)">
 
-    <article class="project">
-      <div class="top">
-        <span class="badge">SaaS</span>
-        <span class="badge">POS</span>
+      <!-- Animated top accent bar -->
+      <div
+        class="project-accent-bar"
+        [style.background]="'linear-gradient(90deg,' + p.badgeColor + ', transparent)'"
+        [class.bar-active]="hoveredIndex() === i">
       </div>
-      <h3>SaaS POS Application</h3>
-      <p>POS-style SaaS UI (dummy text — replace with your real workflow and features later).</p>
-      <div class="tag-row">
-        <span class="tag">Angular</span>
-        <span class="tag">UI</span>
-        <span class="tag">API</span>
-      </div>
-      <div class="actions">
-        <a class="link" href="#" (click)="$event.preventDefault()">Project Details</a>
-      </div>
-    </article>
 
-    <article class="project">
       <div class="top">
-        <span class="badge">Planning</span>
-        <span class="badge">ITC</span>
+        <div style="display:flex; gap:6px; flex-wrap:wrap;">
+          <span class="badge" *ngFor="let b of p.badges">{{ b }}</span>
+        </div>
       </div>
-      <h3>ITC Planning</h3>
-      <p>Planning module screens (dummy text — update later with exact modules and responsibilities).</p>
+
+      <h3>{{ p.title }}</h3>
+      <p>{{ p.description }}</p>
+
+      <ul class="project-highlights">
+        <li *ngFor="let h of p.highlights">{{ h }}</li>
+      </ul>
+
       <div class="tag-row">
-        <span class="tag">Angular</span>
-        <span class="tag">Tables</span>
-        <span class="tag">Export</span>
+        <span
+          class="tag"
+          *ngFor="let t of p.tags; let ti = index"
+          [style.transition-delay]="hoveredIndex() === i ? (ti * 0.04) + 's' : '0s'"
+          [class.tag-lit]="hoveredIndex() === i">
+          {{ t }}
+        </span>
       </div>
+
       <div class="actions">
-        <a class="link" href="#" (click)="$event.preventDefault()">Project Details</a>
+        <a class="link" [href]="p.link" (click)="p.link === '#' && $event.preventDefault()">
+          View Details &#8599;
+        </a>
       </div>
     </article>
   </div>

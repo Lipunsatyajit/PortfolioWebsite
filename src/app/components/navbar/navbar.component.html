@@ -6,26 +6,26 @@
         <span>satyajit<span class="accent">.dev</span></span>
       </a>
 
-      <nav class="nav-links" aria-label="Primary">
-        <a href="#about">About</a>
-        <a href="#skills">Skills</a>
-        <a href="#projects">Projects</a>
-        <a href="#experience">Experience</a>
-        <a href="#contact">Contact</a>
+      <nav class="nav-links" aria-label="Primary navigation">
+        <a href="#about"      [class.nav-active]="activeSection === 'about'">About</a>
+        <a href="#skills"     [class.nav-active]="activeSection === 'skills'">Skills</a>
+        <a href="#projects"   [class.nav-active]="activeSection === 'projects'">Projects</a>
+        <a href="#experience" [class.nav-active]="activeSection === 'experience'">Experience</a>
+        <a href="#contact"    [class.nav-active]="activeSection === 'contact'">Contact</a>
       </nav>
 
       <div class="nav-actions">
-        <button class="btn icon-btn" type="button" aria-label="Toggle theme" title="Toggle theme" (click)="onThemeToggle()">🌓</button>
-        <button class="btn icon-btn hamburger" type="button" aria-label="Open menu" title="Menu" (click)="onMenuToggle()">☰</button>
+        <button class="btn icon-btn" type="button" aria-label="Toggle theme" title="Toggle theme" (click)="onThemeToggle()">&#127763;</button>
+        <button class="btn icon-btn hamburger" type="button" aria-label="Open menu" title="Menu" (click)="onMenuToggle()">&#9776;</button>
       </div>
     </div>
 
-    <div class="mobile-menu" [class.open]="mobileMenuOpen" aria-label="Mobile">
-      <a href="#about" (click)="onClose()">About</a>
-      <a href="#skills" (click)="onClose()">Skills</a>
-      <a href="#projects" (click)="onClose()">Projects</a>
-      <a href="#experience" (click)="onClose()">Experience</a>
-      <a href="#contact" (click)="onClose()">Contact</a>
+    <div class="mobile-menu" [class.open]="mobileMenuOpen" aria-label="Mobile navigation">
+      <a href="#about"      [class.nav-active]="activeSection === 'about'"      (click)="onClose()">About</a>
+      <a href="#skills"     [class.nav-active]="activeSection === 'skills'"     (click)="onClose()">Skills</a>
+      <a href="#projects"   [class.nav-active]="activeSection === 'projects'"   (click)="onClose()">Projects</a>
+      <a href="#experience" [class.nav-active]="activeSection === 'experience'" (click)="onClose()">Experience</a>
+      <a href="#contact"    [class.nav-active]="activeSection === 'contact'"    (click)="onClose()">Contact</a>
     </div>
   </div>
 </div>

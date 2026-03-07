@@ -1,19 +1,33 @@
 <section id="experience">
-  <div class="section-head">
+  <div class="section-head" [@headerReveal]="sectionState()">
     <div>
       <h2>Experience</h2>
-      <p>Professional work experience.</p>
+      <p>Professional frontend development experience in enterprise and SaaS environments.</p>
     </div>
   </div>
 
-  <div class="card" style="padding: 18px;">
-    <div class="timeline">
+  <div class="exp-card card" [@cardReveal]="sectionState()">
+    <div class="timeline" [@timelineReveal]="sectionState()">
       <div class="step" *ngFor="let exp of experiences">
         <div class="dot" aria-hidden="true"></div>
-        <div>
-          <h4>{{ exp.role }}</h4>
-          <div class="meta">{{ exp.duration }} • {{ exp.technologies }}</div>
+        <div class="step-body">
+          <div class="step-header">
+            <div>
+              <h4>{{ exp.role }}</h4>
+              <div class="exp-company">{{ exp.company }}</div>
+            </div>
+            <span class="exp-badge">Dec 2024 – Present &bull; {{ liveDuration }}</span>
+          </div>
+
+          <div class="meta" [innerHTML]="exp.technologies"></div>
           <p>{{ exp.description }}</p>
+
+          <ul class="highlight-list" [@highlightReveal]="sectionState()">
+            <li *ngFor="let h of exp.highlights">
+              <span class="hl-dot" aria-hidden="true"></span>
+              {{ h }}
+            </li>
+          </ul>
         </div>
       </div>
     </div>
