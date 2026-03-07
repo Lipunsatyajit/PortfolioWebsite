@@ -184,9 +184,9 @@ function initZone() {
           }
         }
       } finally {
-        const state = task.state;
-        if (state !== notScheduled && state !== unknown) {
-          if (type == eventTask || isPeriodic || isRefreshable && state === scheduling) {
+        const state2 = task.state;
+        if (state2 !== notScheduled && state2 !== unknown) {
+          if (type == eventTask || isPeriodic || isRefreshable && state2 === scheduling) {
             reEntryGuard && zoneTask._transitionTo(scheduled2, running, scheduling);
           } else {
             const zoneDelegates = zoneTask._zoneDelegates;
@@ -1522,12 +1522,12 @@ function patchTimer(window2, setName, cancelName, nameSuffix) {
           handle.refresh = function() {
             const {
               zone,
-              state
+              state: state2
             } = task;
-            if (state === "notScheduled") {
+            if (state2 === "notScheduled") {
               task._state = "scheduled";
               zone._updateTaskCount(task, 1);
-            } else if (state === "running") {
+            } else if (state2 === "running") {
               task._state = "scheduling";
             }
             return originalRefresh.call(this);
@@ -1930,10 +1930,10 @@ function patchPromise(Zone2) {
     const RESOLVED = true;
     const REJECTED = false;
     const REJECTED_NO_CATCH = 0;
-    function makeResolver(promise, state) {
+    function makeResolver(promise, state2) {
       return (v) => {
         try {
-          resolvePromise(promise, state, v);
+          resolvePromise(promise, state2, v);
         } catch (err) {
           resolvePromise(promise, false, err);
         }
@@ -1953,7 +1953,7 @@ function patchPromise(Zone2) {
     };
     const TYPE_ERROR = "Promise resolved with itself";
     const CURRENT_TASK_TRACE_SYMBOL = __symbol__2("currentTaskTrace");
-    function resolvePromise(promise, state, value) {
+    function resolvePromise(promise, state2, value) {
       const onceWrapper = once();
       if (promise === value) {
         throw new TypeError(TYPE_ERROR);
@@ -1970,28 +1970,28 @@ function patchPromise(Zone2) {
           })();
           return promise;
         }
-        if (state !== REJECTED && value instanceof ZoneAwarePromise && value.hasOwnProperty(symbolState) && value.hasOwnProperty(symbolValue) && value[symbolState] !== UNRESOLVED) {
+        if (state2 !== REJECTED && value instanceof ZoneAwarePromise && value.hasOwnProperty(symbolState) && value.hasOwnProperty(symbolValue) && value[symbolState] !== UNRESOLVED) {
           clearRejectedNoCatch(value);
           resolvePromise(promise, value[symbolState], value[symbolValue]);
-        } else if (state !== REJECTED && typeof then === "function") {
+        } else if (state2 !== REJECTED && typeof then === "function") {
           try {
-            then.call(value, onceWrapper(makeResolver(promise, state)), onceWrapper(makeResolver(promise, false)));
+            then.call(value, onceWrapper(makeResolver(promise, state2)), onceWrapper(makeResolver(promise, false)));
           } catch (err) {
             onceWrapper(() => {
               resolvePromise(promise, false, err);
             })();
           }
         } else {
-          promise[symbolState] = state;
+          promise[symbolState] = state2;
           const queue = promise[symbolValue];
           promise[symbolValue] = value;
           if (promise[symbolFinally] === symbolFinally) {
-            if (state === RESOLVED) {
+            if (state2 === RESOLVED) {
               promise[symbolState] = promise[symbolParentPromiseState];
               promise[symbolValue] = promise[symbolParentPromiseValue];
             }
           }
-          if (state === REJECTED && value instanceof Error) {
+          if (state2 === REJECTED && value instanceof Error) {
             const trace = Zone3.currentTask && Zone3.currentTask.data && Zone3.currentTask.data[creationTrace];
             if (trace) {
               ObjectDefineProperty2(value, CURRENT_TASK_TRACE_SYMBOL, {
@@ -2005,7 +2005,7 @@ function patchPromise(Zone2) {
           for (let i = 0; i < queue.length; ) {
             scheduleResolveOrReject(promise, queue[i++], queue[i++], queue[i++], queue[i++]);
           }
-          if (queue.length == 0 && state == REJECTED) {
+          if (queue.length == 0 && state2 == REJECTED) {
             promise[symbolState] = REJECTED_NO_CATCH;
             let uncaughtPromiseError = value;
             try {
@@ -4338,14 +4338,14 @@ function catchError(selector) {
 function scanInternals(accumulator, seed, hasSeed, emitOnNext, emitBeforeComplete) {
   return (source, subscriber) => {
     let hasState = hasSeed;
-    let state = seed;
+    let state2 = seed;
     let index = 0;
     source.subscribe(createOperatorSubscriber(subscriber, (value) => {
       const i = index++;
-      state = hasState ? accumulator(state, value, i) : (hasState = true, value);
-      emitOnNext && subscriber.next(state);
+      state2 = hasState ? accumulator(state2, value, i) : (hasState = true, value);
+      emitOnNext && subscriber.next(state2);
     }, emitBeforeComplete && (() => {
-      hasState && subscriber.next(state);
+      hasState && subscriber.next(state2);
       subscriber.complete();
     })));
   };
@@ -12778,39 +12778,39 @@ function icuCreateOpCode(opCode, parentIdx, refIdx) {
 function isRootTemplateMessage(subTemplateIndex) {
   return subTemplateIndex === -1;
 }
-function enterIcu(state, tIcu, lView) {
-  state.index = 0;
+function enterIcu(state2, tIcu, lView) {
+  state2.index = 0;
   const currentCase = getCurrentICUCaseIndex(tIcu, lView);
   if (currentCase !== null) {
     ngDevMode && assertNumberInRange(currentCase, 0, tIcu.cases.length - 1);
-    state.removes = tIcu.remove[currentCase];
+    state2.removes = tIcu.remove[currentCase];
   } else {
-    state.removes = EMPTY_ARRAY;
+    state2.removes = EMPTY_ARRAY;
   }
 }
-function icuContainerIteratorNext(state) {
-  if (state.index < state.removes.length) {
-    const removeOpCode = state.removes[state.index++];
+function icuContainerIteratorNext(state2) {
+  if (state2.index < state2.removes.length) {
+    const removeOpCode = state2.removes[state2.index++];
     ngDevMode && assertNumber(removeOpCode, "Expecting OpCode number");
     if (removeOpCode > 0) {
-      const rNode = state.lView[removeOpCode];
+      const rNode = state2.lView[removeOpCode];
       ngDevMode && assertDomNode(rNode);
       return rNode;
     } else {
-      state.stack.push(state.index, state.removes);
+      state2.stack.push(state2.index, state2.removes);
       const tIcuIndex = ~removeOpCode;
-      const tIcu = state.lView[TVIEW].data[tIcuIndex];
+      const tIcu = state2.lView[TVIEW].data[tIcuIndex];
       ngDevMode && assertTIcu(tIcu);
-      enterIcu(state, tIcu, state.lView);
-      return icuContainerIteratorNext(state);
+      enterIcu(state2, tIcu, state2.lView);
+      return icuContainerIteratorNext(state2);
     }
   } else {
-    if (state.stack.length === 0) {
+    if (state2.stack.length === 0) {
       return null;
     } else {
-      state.removes = state.stack.pop();
-      state.index = state.stack.pop();
-      return icuContainerIteratorNext(state);
+      state2.removes = state2.stack.pop();
+      state2.index = state2.stack.pop();
+      return icuContainerIteratorNext(state2);
     }
   }
 }
@@ -15214,13 +15214,13 @@ var DeferEventEntry = class {
     };
   }
 };
-function onInteraction(trigger, callback) {
-  let entry = interactionTriggers.get(trigger);
+function onInteraction(trigger2, callback) {
+  let entry = interactionTriggers.get(trigger2);
   if (!entry) {
     entry = new DeferEventEntry();
-    interactionTriggers.set(trigger, entry);
+    interactionTriggers.set(trigger2, entry);
     for (const name of interactionEventNames) {
-      trigger.addEventListener(name, entry.listener, eventListenerOptions);
+      trigger2.addEventListener(name, entry.listener, eventListenerOptions);
     }
   }
   entry.callbacks.add(callback);
@@ -15231,20 +15231,20 @@ function onInteraction(trigger, callback) {
     } = entry;
     callbacks.delete(callback);
     if (callbacks.size === 0) {
-      interactionTriggers.delete(trigger);
+      interactionTriggers.delete(trigger2);
       for (const name of interactionEventNames) {
-        trigger.removeEventListener(name, listener, eventListenerOptions);
+        trigger2.removeEventListener(name, listener, eventListenerOptions);
       }
     }
   };
 }
-function onHover(trigger, callback) {
-  let entry = hoverTriggers.get(trigger);
+function onHover(trigger2, callback) {
+  let entry = hoverTriggers.get(trigger2);
   if (!entry) {
     entry = new DeferEventEntry();
-    hoverTriggers.set(trigger, entry);
+    hoverTriggers.set(trigger2, entry);
     for (const name of hoverEventNames) {
-      trigger.addEventListener(name, entry.listener, eventListenerOptions);
+      trigger2.addEventListener(name, entry.listener, eventListenerOptions);
     }
   }
   entry.callbacks.add(callback);
@@ -15256,15 +15256,15 @@ function onHover(trigger, callback) {
     callbacks.delete(callback);
     if (callbacks.size === 0) {
       for (const name of hoverEventNames) {
-        trigger.removeEventListener(name, listener, eventListenerOptions);
+        trigger2.removeEventListener(name, listener, eventListenerOptions);
       }
-      hoverTriggers.delete(trigger);
+      hoverTriggers.delete(trigger2);
     }
   };
 }
-function onViewport(trigger, callback, injector) {
+function onViewport(trigger2, callback, injector) {
   const ngZone = injector.get(NgZone);
-  let entry = viewportTriggers.get(trigger);
+  let entry = viewportTriggers.get(trigger2);
   intersectionObserver = intersectionObserver || ngZone.runOutsideAngular(() => {
     return new IntersectionObserver((entries) => {
       for (const current of entries) {
@@ -15276,19 +15276,19 @@ function onViewport(trigger, callback, injector) {
   });
   if (!entry) {
     entry = new DeferEventEntry();
-    ngZone.runOutsideAngular(() => intersectionObserver.observe(trigger));
-    viewportTriggers.set(trigger, entry);
+    ngZone.runOutsideAngular(() => intersectionObserver.observe(trigger2));
+    viewportTriggers.set(trigger2, entry);
     observedViewportElements++;
   }
   entry.callbacks.add(callback);
   return () => {
-    if (!viewportTriggers.has(trigger)) {
+    if (!viewportTriggers.has(trigger2)) {
       return;
     }
     entry.callbacks.delete(callback);
     if (entry.callbacks.size === 0) {
-      intersectionObserver?.unobserve(trigger);
-      viewportTriggers.delete(trigger);
+      intersectionObserver?.unobserve(trigger2);
+      viewportTriggers.delete(trigger2);
       observedViewportElements--;
     }
     if (observedViewportElements === 0) {
@@ -24233,11 +24233,11 @@ var BrowserPlatformLocation = class _BrowserPlatformLocation extends PlatformLoc
   set pathname(newPath) {
     this._location.pathname = newPath;
   }
-  pushState(state, title, url) {
-    this._history.pushState(state, title, url);
+  pushState(state2, title, url) {
+    this._history.pushState(state2, title, url);
   }
-  replaceState(state, title, url) {
-    this._history.replaceState(state, title, url);
+  replaceState(state2, title, url) {
+    this._history.replaceState(state2, title, url);
   }
   forward() {
     this._history.forward();
@@ -24358,13 +24358,13 @@ var PathLocationStrategy = class _PathLocationStrategy extends LocationStrategy 
     const hash = this._platformLocation.hash;
     return hash && includeHash ? `${pathname}${hash}` : pathname;
   }
-  pushState(state, title, url, queryParams) {
+  pushState(state2, title, url, queryParams) {
     const externalUrl = this.prepareExternalUrl(url + normalizeQueryParams(queryParams));
-    this._platformLocation.pushState(state, title, externalUrl);
+    this._platformLocation.pushState(state2, title, externalUrl);
   }
-  replaceState(state, title, url, queryParams) {
+  replaceState(state2, title, url, queryParams) {
     const externalUrl = this.prepareExternalUrl(url + normalizeQueryParams(queryParams));
-    this._platformLocation.replaceState(state, title, externalUrl);
+    this._platformLocation.replaceState(state2, title, externalUrl);
   }
   forward() {
     this._platformLocation.forward();
@@ -24439,19 +24439,19 @@ var HashLocationStrategy = class _HashLocationStrategy extends LocationStrategy 
     const url = joinWithSlash(this._baseHref, internal);
     return url.length > 0 ? "#" + url : url;
   }
-  pushState(state, title, path, queryParams) {
+  pushState(state2, title, path, queryParams) {
     let url = this.prepareExternalUrl(path + normalizeQueryParams(queryParams));
     if (url.length == 0) {
       url = this._platformLocation.pathname;
     }
-    this._platformLocation.pushState(state, title, url);
+    this._platformLocation.pushState(state2, title, url);
   }
-  replaceState(state, title, path, queryParams) {
+  replaceState(state2, title, path, queryParams) {
     let url = this.prepareExternalUrl(path + normalizeQueryParams(queryParams));
     if (url.length == 0) {
       url = this._platformLocation.pathname;
     }
-    this._platformLocation.replaceState(state, title, url);
+    this._platformLocation.replaceState(state2, title, url);
   }
   forward() {
     this._platformLocation.forward();
@@ -24542,8 +24542,8 @@ var Location = class _Location {
    * @returns True if the given URL path is equal to the current normalized path, false
    * otherwise.
    */
-  isCurrentPathEqualTo(path, query = "") {
-    return this.path() == this.normalize(path + normalizeQueryParams(query));
+  isCurrentPathEqualTo(path, query2 = "") {
+    return this.path() == this.normalize(path + normalizeQueryParams(query2));
   }
   /**
    * Normalizes a URL path by stripping any trailing slashes.
@@ -24581,9 +24581,9 @@ var Location = class _Location {
    * @param state Location history state.
    *
    */
-  go(path, query = "", state = null) {
-    this._locationStrategy.pushState(state, "", path, query);
-    this._notifyUrlChangeListeners(this.prepareExternalUrl(path + normalizeQueryParams(query)), state);
+  go(path, query2 = "", state2 = null) {
+    this._locationStrategy.pushState(state2, "", path, query2);
+    this._notifyUrlChangeListeners(this.prepareExternalUrl(path + normalizeQueryParams(query2)), state2);
   }
   /**
    * Changes the browser's URL to a normalized version of the given URL, and replaces
@@ -24593,9 +24593,9 @@ var Location = class _Location {
    * @param query Query parameters.
    * @param state Location history state.
    */
-  replaceState(path, query = "", state = null) {
-    this._locationStrategy.replaceState(state, "", path, query);
-    this._notifyUrlChangeListeners(this.prepareExternalUrl(path + normalizeQueryParams(query)), state);
+  replaceState(path, query2 = "", state2 = null) {
+    this._locationStrategy.replaceState(state2, "", path, query2);
+    this._notifyUrlChangeListeners(this.prepareExternalUrl(path + normalizeQueryParams(query2)), state2);
   }
   /**
    * Navigates forward in the platform's history.
@@ -24646,8 +24646,8 @@ var Location = class _Location {
     };
   }
   /** @internal */
-  _notifyUrlChangeListeners(url = "", state) {
-    this._urlChangeListeners.forEach((fn) => fn(url, state));
+  _notifyUrlChangeListeners(url = "", state2) {
+    this._urlChangeListeners.forEach((fn) => fn(url, state2));
   }
   /**
    * Subscribes to the platform's `popState` events.
@@ -26107,13 +26107,13 @@ var NgClass = class _NgClass {
     this._applyStateDiff();
   }
   _updateState(klass, nextEnabled) {
-    const state = this.stateMap.get(klass);
-    if (state !== void 0) {
-      if (state.enabled !== nextEnabled) {
-        state.changed = true;
-        state.enabled = nextEnabled;
+    const state2 = this.stateMap.get(klass);
+    if (state2 !== void 0) {
+      if (state2.enabled !== nextEnabled) {
+        state2.changed = true;
+        state2.enabled = nextEnabled;
       }
-      state.touched = true;
+      state2.touched = true;
     } else {
       this.stateMap.set(klass, {
         enabled: nextEnabled,
@@ -26125,17 +26125,17 @@ var NgClass = class _NgClass {
   _applyStateDiff() {
     for (const stateEntry of this.stateMap) {
       const klass = stateEntry[0];
-      const state = stateEntry[1];
-      if (state.changed) {
-        this._toggleClass(klass, state.enabled);
-        state.changed = false;
-      } else if (!state.touched) {
-        if (state.enabled) {
+      const state2 = stateEntry[1];
+      if (state2.changed) {
+        this._toggleClass(klass, state2.enabled);
+        state2.changed = false;
+      } else if (!state2.touched) {
+        if (state2.enabled) {
           this._toggleClass(klass, false);
         }
         this.stateMap.delete(klass);
       }
-      state.touched = false;
+      state2.touched = false;
     }
   }
   _toggleClass(klass, enabled) {
@@ -30667,6 +30667,21 @@ var AnimationMetadataType;
   AnimationMetadataType2[AnimationMetadataType2["Stagger"] = 12] = "Stagger";
 })(AnimationMetadataType || (AnimationMetadataType = {}));
 var AUTO_STYLE = "*";
+function trigger(name, definitions) {
+  return {
+    type: AnimationMetadataType.Trigger,
+    name,
+    definitions,
+    options: {}
+  };
+}
+function animate(timings, styles = null) {
+  return {
+    type: AnimationMetadataType.Animate,
+    styles,
+    timings
+  };
+}
 function sequence(steps, options = null) {
   return {
     type: AnimationMetadataType.Sequence,
@@ -30679,6 +30694,43 @@ function style(tokens) {
     type: AnimationMetadataType.Style,
     styles: tokens,
     offset: null
+  };
+}
+function state(name, styles, options) {
+  return {
+    type: AnimationMetadataType.State,
+    name,
+    styles,
+    options
+  };
+}
+function keyframes(steps) {
+  return {
+    type: AnimationMetadataType.Keyframes,
+    steps
+  };
+}
+function transition(stateChangeExpr, steps, options = null) {
+  return {
+    type: AnimationMetadataType.Transition,
+    expr: stateChangeExpr,
+    animation: steps,
+    options
+  };
+}
+function query(selector, animation, options = null) {
+  return {
+    type: AnimationMetadataType.Query,
+    selector,
+    animation,
+    options
+  };
+}
+function stagger(timings, animation) {
+  return {
+    type: AnimationMetadataType.Stagger,
+    timings,
+    animation
   };
 }
 var AnimationBuilder = class _AnimationBuilder {
@@ -31179,12 +31231,12 @@ function optimizeGroupPlayer(players) {
       return new AnimationGroupPlayer(players);
   }
 }
-function normalizeKeyframes$1(normalizer, keyframes, preStyles = /* @__PURE__ */ new Map(), postStyles = /* @__PURE__ */ new Map()) {
+function normalizeKeyframes$1(normalizer, keyframes2, preStyles = /* @__PURE__ */ new Map(), postStyles = /* @__PURE__ */ new Map()) {
   const errors = [];
   const normalizedKeyframes = [];
   let previousOffset = -1;
   let previousKeyframe = null;
-  keyframes.forEach((kf) => {
+  keyframes2.forEach((kf) => {
     const offset = kf.get("offset");
     const isSameOffset = offset == previousOffset;
     const normalizedKeyframe = isSameOffset && previousKeyframe || /* @__PURE__ */ new Map();
@@ -31354,7 +31406,7 @@ var NoopAnimationDriver = class _NoopAnimationDriver {
   /**
    * @returns An `NoopAnimationPlayer`
    */
-  animate(element, keyframes, duration, delay, easing, previousPlayers = [], scrubberAccessRequested) {
+  animate(element, keyframes2, duration, delay, easing, previousPlayers = [], scrubberAccessRequested) {
     return new NoopAnimationPlayer(duration, delay);
   }
   static {
@@ -31455,14 +31507,14 @@ function parseTimeExpression(exp, errors, allowNegativeValues) {
     easing
   };
 }
-function normalizeKeyframes(keyframes) {
-  if (!keyframes.length) {
+function normalizeKeyframes(keyframes2) {
+  if (!keyframes2.length) {
     return [];
   }
-  if (keyframes[0] instanceof Map) {
-    return keyframes;
+  if (keyframes2[0] instanceof Map) {
+    return keyframes2;
   }
-  return keyframes.map((kf) => new Map(Object.entries(kf)));
+  return keyframes2.map((kf) => new Map(Object.entries(kf)));
 }
 function setStyles(element, styles, formerStyles) {
   styles.forEach((val, prop) => {
@@ -31531,9 +31583,9 @@ function camelCaseToDashCase2(input2) {
 function allowPreviousPlayerStylesMerge(duration, delay) {
   return duration === 0 || delay === 0;
 }
-function balancePreviousStylesIntoKeyframes(element, keyframes, previousStyles) {
-  if (previousStyles.size && keyframes.length) {
-    let startingKeyframe = keyframes[0];
+function balancePreviousStylesIntoKeyframes(element, keyframes2, previousStyles) {
+  if (previousStyles.size && keyframes2.length) {
+    let startingKeyframe = keyframes2[0];
     let missingStyleProps = [];
     previousStyles.forEach((val, prop) => {
       if (!startingKeyframe.has(prop)) {
@@ -31542,13 +31594,13 @@ function balancePreviousStylesIntoKeyframes(element, keyframes, previousStyles) 
       startingKeyframe.set(prop, val);
     });
     if (missingStyleProps.length) {
-      for (let i = 1; i < keyframes.length; i++) {
-        let kf = keyframes[i];
+      for (let i = 1; i < keyframes2.length; i++) {
+        let kf = keyframes2[i];
         missingStyleProps.forEach((prop) => kf.set(prop, computeStyle(element, prop)));
       }
     }
   }
-  return keyframes;
+  return keyframes2;
 }
 function visitDslNode(visitor, node, context2) {
   switch (node.type) {
@@ -31733,10 +31785,10 @@ var AnimationAstBuilderVisitor = class {
         });
         stateDef.name = name;
       } else if (def.type == AnimationMetadataType.Transition) {
-        const transition = this.visitTransition(def, context2);
-        queryCount += transition.queryCount;
-        depCount += transition.depCount;
-        transitions.push(transition);
+        const transition2 = this.visitTransition(def, context2);
+        queryCount += transition2.queryCount;
+        depCount += transition2.depCount;
+        transitions.push(transition2);
       } else {
         context2.errors.push(invalidDefinition());
       }
@@ -31950,7 +32002,7 @@ var AnimationAstBuilderVisitor = class {
     let offsetsOutOfOrder = false;
     let keyframesOutOfRange = false;
     let previousOffset = 0;
-    const keyframes = metadata.steps.map((styles) => {
+    const keyframes2 = metadata.steps.map((styles) => {
       const style2 = this._makeStyleAst(styles, context2);
       let offsetVal = style2.offset != null ? style2.offset : consumeOffset(style2.styles);
       let offset = 0;
@@ -31981,7 +32033,7 @@ var AnimationAstBuilderVisitor = class {
     const currentTime = context2.currentTime;
     const currentAnimateTimings = context2.currentAnimateTimings;
     const animateDuration = currentAnimateTimings.duration;
-    keyframes.forEach((kf, i) => {
+    keyframes2.forEach((kf, i) => {
       const offset = generatedOffset > 0 ? i == limit ? 1 : generatedOffset * i : offsets[i];
       const durationUpToThisFrame = offset * animateDuration;
       context2.currentTime = currentTime + currentAnimateTimings.delay + durationUpToThisFrame;
@@ -32133,11 +32185,11 @@ function makeTimingAst(duration, delay, easing) {
     easing
   };
 }
-function createTimelineInstruction(element, keyframes, preStyleProps, postStyleProps, duration, delay, easing = null, subTimeline = false) {
+function createTimelineInstruction(element, keyframes2, preStyleProps, postStyleProps, duration, delay, easing = null, subTimeline = false) {
   return {
     type: 1,
     element,
-    keyframes,
+    keyframes: keyframes2,
     preStyleProps,
     postStyleProps,
     duration,
@@ -32718,9 +32770,9 @@ var TimelineBuilder = class _TimelineBuilder {
   }
 };
 var SubTimelineBuilder = class extends TimelineBuilder {
-  constructor(driver, element, keyframes, preStyleProps, postStyleProps, timings, _stretchStartingKeyframe = false) {
+  constructor(driver, element, keyframes2, preStyleProps, postStyleProps, timings, _stretchStartingKeyframe = false) {
     super(driver, element, timings.delay);
-    this.keyframes = keyframes;
+    this.keyframes = keyframes2;
     this.preStyleProps = preStyleProps;
     this.postStyleProps = postStyleProps;
     this._stretchStartingKeyframe = _stretchStartingKeyframe;
@@ -32734,7 +32786,7 @@ var SubTimelineBuilder = class extends TimelineBuilder {
     return this.keyframes.length > 1;
   }
   buildKeyframes() {
-    let keyframes = this.keyframes;
+    let keyframes2 = this.keyframes;
     let {
       delay,
       duration,
@@ -32744,15 +32796,15 @@ var SubTimelineBuilder = class extends TimelineBuilder {
       const newKeyframes = [];
       const totalTime = duration + delay;
       const startingGap = delay / totalTime;
-      const newFirstKeyframe = new Map(keyframes[0]);
+      const newFirstKeyframe = new Map(keyframes2[0]);
       newFirstKeyframe.set("offset", 0);
       newKeyframes.push(newFirstKeyframe);
-      const oldFirstKeyframe = new Map(keyframes[0]);
+      const oldFirstKeyframe = new Map(keyframes2[0]);
       oldFirstKeyframe.set("offset", roundOffset(startingGap));
       newKeyframes.push(oldFirstKeyframe);
-      const limit = keyframes.length - 1;
+      const limit = keyframes2.length - 1;
       for (let i = 1; i <= limit; i++) {
-        let kf = new Map(keyframes[i]);
+        let kf = new Map(keyframes2[i]);
         const oldOffset = kf.get("offset");
         const timeAtKeyframe = delay + oldOffset * duration;
         kf.set("offset", roundOffset(timeAtKeyframe / totalTime));
@@ -32761,9 +32813,9 @@ var SubTimelineBuilder = class extends TimelineBuilder {
       duration = totalTime;
       delay = 0;
       easing = "";
-      keyframes = newKeyframes;
+      keyframes2 = newKeyframes;
     }
-    return createTimelineInstruction(this.element, keyframes, this.preStyleProps, this.postStyleProps, duration, delay, easing, true);
+    return createTimelineInstruction(this.element, keyframes2, this.preStyleProps, this.postStyleProps, duration, delay, easing, true);
   }
 };
 function roundOffset(offset, decimalPoints = 3) {
@@ -32874,10 +32926,10 @@ function checkNonAnimatableInTimelines(timelines, triggerName, driver) {
   ]);
   const invalidNonAnimatableProps = /* @__PURE__ */ new Set();
   timelines.forEach(({
-    keyframes
+    keyframes: keyframes2
   }) => {
     const nonAnimatablePropsInitialValues = /* @__PURE__ */ new Map();
-    keyframes.forEach((keyframe) => {
+    keyframes2.forEach((keyframe) => {
       const entriesToCheck = Array.from(keyframe.entries()).filter(([prop]) => !allowedNonAnimatableProps.has(prop));
       for (const [prop, value] of entriesToCheck) {
         if (!driver.validateAnimatableStyleProperty(prop)) {
@@ -32972,7 +33024,7 @@ function createFallbackTransition(triggerName, states, normalizer) {
     steps: [],
     options: null
   };
-  const transition = {
+  const transition2 = {
     type: AnimationMetadataType.Transition,
     animation,
     matchers,
@@ -32980,7 +33032,7 @@ function createFallbackTransition(triggerName, states, normalizer) {
     queryCount: 0,
     depCount: 0
   };
-  return new AnimationTransitionFactory(triggerName, transition, states);
+  return new AnimationTransitionFactory(triggerName, transition2, states);
 }
 function balanceProperties(stateMap, key1, key2) {
   if (stateMap.has(key1)) {
@@ -33016,8 +33068,8 @@ var TimelineAnimationEngine = class {
   }
   _buildPlayer(i, preStyles, postStyles) {
     const element = i.element;
-    const keyframes = normalizeKeyframes$1(this._normalizer, i.keyframes, preStyles, postStyles);
-    return this._driver.animate(element, keyframes, i.duration, i.delay, i.easing, [], true);
+    const keyframes2 = normalizeKeyframes$1(this._normalizer, i.keyframes, preStyles, postStyles);
+    return this._driver.animate(element, keyframes2, i.duration, i.delay, i.easing, [], true);
   }
   create(id, element, options = {}) {
     const errors = [];
@@ -33228,14 +33280,14 @@ var AnimationTransitionNamespace = class {
     }
   }
   _getTrigger(name) {
-    const trigger = this._triggers.get(name);
-    if (!trigger) {
+    const trigger2 = this._triggers.get(name);
+    if (!trigger2) {
       throw unregisteredTrigger(name);
     }
-    return trigger;
+    return trigger2;
   }
   trigger(element, triggerName, value, defaultToFallback = true) {
-    const trigger = this._getTrigger(triggerName);
+    const trigger2 = this._getTrigger(triggerName);
     const player = new TransitionAnimationPlayer(this.id, triggerName, element);
     let triggersWithStates = this._engine.statesByElement.get(element);
     if (!triggersWithStates) {
@@ -33257,8 +33309,8 @@ var AnimationTransitionNamespace = class {
     if (!isRemoval && fromState.value === toState.value) {
       if (!objEquals(fromState.params, toState.params)) {
         const errors = [];
-        const fromStyles = trigger.matchStyles(fromState.value, fromState.params, errors);
-        const toStyles = trigger.matchStyles(toState.value, toState.params, errors);
+        const fromStyles = trigger2.matchStyles(fromState.value, fromState.params, errors);
+        const toStyles = trigger2.matchStyles(toState.value, toState.params, errors);
         if (errors.length) {
           this._engine.reportError(errors);
         } else {
@@ -33276,18 +33328,18 @@ var AnimationTransitionNamespace = class {
         player2.destroy();
       }
     });
-    let transition = trigger.matchTransition(fromState.value, toState.value, element, toState.params);
+    let transition2 = trigger2.matchTransition(fromState.value, toState.value, element, toState.params);
     let isFallbackTransition = false;
-    if (!transition) {
+    if (!transition2) {
       if (!defaultToFallback) return;
-      transition = trigger.fallbackTransition;
+      transition2 = trigger2.fallbackTransition;
       isFallbackTransition = true;
     }
     this._engine.totalQueuedPlayers++;
     this._queue.push({
       element,
       triggerName,
-      transition,
+      transition: transition2,
       fromState,
       toState,
       player,
@@ -33352,8 +33404,8 @@ var AnimationTransitionNamespace = class {
     const previousTriggersValues = /* @__PURE__ */ new Map();
     if (triggerStates) {
       const players = [];
-      triggerStates.forEach((state, triggerName) => {
-        previousTriggersValues.set(triggerName, state.value);
+      triggerStates.forEach((state2, triggerName) => {
+        previousTriggersValues.set(triggerName, state2.value);
         if (this._triggers.has(triggerName)) {
           const player = this.trigger(element, triggerName, VOID_VALUE, defaultToFallback);
           if (player) {
@@ -33380,8 +33432,8 @@ var AnimationTransitionNamespace = class {
         const triggerName = listener.name;
         if (visitedTriggers.has(triggerName)) return;
         visitedTriggers.add(triggerName);
-        const trigger = this._triggers.get(triggerName);
-        const transition = trigger.fallbackTransition;
+        const trigger2 = this._triggers.get(triggerName);
+        const transition2 = trigger2.fallbackTransition;
         const fromState = elementStates.get(triggerName) || DEFAULT_STATE_VALUE;
         const toState = new StateValue(VOID_VALUE);
         const player = new TransitionAnimationPlayer(this.id, triggerName, element);
@@ -33389,7 +33441,7 @@ var AnimationTransitionNamespace = class {
         this._queue.push({
           element,
           triggerName,
-          transition,
+          transition: transition2,
           fromState,
           toState,
           player,
@@ -33555,9 +33607,9 @@ var TransitionAnimationEngine = class {
     }
     return ns;
   }
-  registerTrigger(namespaceId, name, trigger) {
+  registerTrigger(namespaceId, name, trigger2) {
     let ns = this._namespaceLookup[namespaceId];
-    if (ns && ns.register(name, trigger)) {
+    if (ns && ns.register(name, trigger2)) {
       this.totalAnimations++;
     }
   }
@@ -33853,9 +33905,9 @@ var TransitionAnimationEngine = class {
               const previousValue = details.previousTriggersValues.get(entry.triggerName);
               const triggersWithStates = this.statesByElement.get(entry.element);
               if (triggersWithStates && triggersWithStates.has(entry.triggerName)) {
-                const state = triggersWithStates.get(entry.triggerName);
-                state.value = previousValue;
-                triggersWithStates.set(entry.triggerName, state);
+                const state2 = triggersWithStates.get(entry.triggerName);
+                state2.value = previousValue;
+                triggersWithStates.set(entry.triggerName, state2);
               }
             }
             player.destroy();
@@ -34135,8 +34187,8 @@ var TransitionAnimationEngine = class {
       });
       const preStyles = preStylesMap.get(element);
       const postStyles = postStylesMap.get(element);
-      const keyframes = normalizeKeyframes$1(this._normalizer, timelineInstruction.keyframes, preStyles, postStyles);
-      const player2 = this._buildPlayer(timelineInstruction, keyframes, previousPlayers);
+      const keyframes2 = normalizeKeyframes$1(this._normalizer, timelineInstruction.keyframes, preStyles, postStyles);
+      const player2 = this._buildPlayer(timelineInstruction, keyframes2, previousPlayers);
       if (timelineInstruction.subTimeline && skippedPlayersMap) {
         allSubElements.add(element);
       }
@@ -34162,9 +34214,9 @@ var TransitionAnimationEngine = class {
     });
     return player;
   }
-  _buildPlayer(instruction, keyframes, previousPlayers) {
-    if (keyframes.length > 0) {
-      return this.driver.animate(instruction.element, keyframes, instruction.duration, instruction.delay, instruction.easing, previousPlayers);
+  _buildPlayer(instruction, keyframes2, previousPlayers) {
+    if (keyframes2.length > 0) {
+      return this.driver.animate(instruction.element, keyframes2, instruction.duration, instruction.delay, instruction.easing, previousPlayers);
     }
     return new NoopAnimationPlayer(instruction.duration, instruction.delay);
   }
@@ -34407,8 +34459,8 @@ var AnimationEngine = class {
   }
   registerTrigger(componentId, namespaceId, hostElement, name, metadata) {
     const cacheKey = componentId + "-" + name;
-    let trigger = this._triggerCache[cacheKey];
-    if (!trigger) {
+    let trigger2 = this._triggerCache[cacheKey];
+    if (!trigger2) {
       const errors = [];
       const warnings = [];
       const ast = buildAnimationAst(this._driver, metadata, errors, warnings);
@@ -34418,10 +34470,10 @@ var AnimationEngine = class {
       if (warnings.length) {
         warnTriggerBuild(name, warnings);
       }
-      trigger = buildTrigger(name, ast, this._normalizer);
-      this._triggerCache[cacheKey] = trigger;
+      trigger2 = buildTrigger(name, ast, this._normalizer);
+      this._triggerCache[cacheKey] = trigger2;
     }
-    this._transitionEngine.registerTrigger(namespaceId, name, trigger);
+    this._transitionEngine.registerTrigger(namespaceId, name, trigger2);
   }
   register(namespaceId, hostElement) {
     this._transitionEngine.register(namespaceId, hostElement);
@@ -34545,9 +34597,9 @@ function isNonAnimatableStyle(prop) {
   return prop === "display" || prop === "position";
 }
 var WebAnimationsPlayer = class {
-  constructor(element, keyframes, options, _specialStyles) {
+  constructor(element, keyframes2, options, _specialStyles) {
     this.element = element;
-    this.keyframes = keyframes;
+    this.keyframes = keyframes2;
     this.options = options;
     this._specialStyles = _specialStyles;
     this._onDoneFns = [];
@@ -34580,9 +34632,9 @@ var WebAnimationsPlayer = class {
   _buildPlayer() {
     if (this._initialized) return;
     this._initialized = true;
-    const keyframes = this.keyframes;
-    this.domPlayer = this._triggerWebAnimation(this.element, keyframes, this.options);
-    this._finalKeyframe = keyframes.length ? keyframes[keyframes.length - 1] : /* @__PURE__ */ new Map();
+    const keyframes2 = this.keyframes;
+    this.domPlayer = this._triggerWebAnimation(this.element, keyframes2, this.options);
+    this._finalKeyframe = keyframes2.length ? keyframes2[keyframes2.length - 1] : /* @__PURE__ */ new Map();
     const onFinish = () => this._onFinish();
     this.domPlayer.addEventListener("finish", onFinish);
     this.onDestroy(() => {
@@ -34596,16 +34648,16 @@ var WebAnimationsPlayer = class {
       this.domPlayer.pause();
     }
   }
-  _convertKeyframesToObject(keyframes) {
+  _convertKeyframesToObject(keyframes2) {
     const kfs = [];
-    keyframes.forEach((frame) => {
+    keyframes2.forEach((frame) => {
       kfs.push(Object.fromEntries(frame));
     });
     return kfs;
   }
   /** @internal */
-  _triggerWebAnimation(element, keyframes, options) {
-    return element.animate(this._convertKeyframesToObject(keyframes), options);
+  _triggerWebAnimation(element, keyframes2, options) {
+    return element.animate(this._convertKeyframesToObject(keyframes2), options);
   }
   onStart(fn) {
     this._originalOnStartFns.push(fn);
@@ -34731,7 +34783,7 @@ var WebAnimationsDriver = class {
   computeStyle(element, prop, defaultValue) {
     return computeStyle(element, prop);
   }
-  animate(element, keyframes, duration, delay, easing, previousPlayers = []) {
+  animate(element, keyframes2, duration, delay, easing, previousPlayers = []) {
     const fill = delay == 0 ? "both" : "forwards";
     const playerOptions = {
       duration,
@@ -34748,7 +34800,7 @@ var WebAnimationsDriver = class {
         player.currentSnapshot.forEach((val, prop) => previousStyles.set(prop, val));
       });
     }
-    let _keyframes = normalizeKeyframes(keyframes).map((styles) => new Map(styles));
+    let _keyframes = normalizeKeyframes(keyframes2).map((styles) => new Map(styles));
     _keyframes = balancePreviousStylesIntoKeyframes(element, _keyframes, previousStyles);
     const specialStyles = packageNonAnimatableStyles(element, _keyframes);
     return new WebAnimationsPlayer(element, _keyframes, playerOptions, specialStyles);
@@ -34893,9 +34945,9 @@ function resolveElementFromTarget(target) {
 }
 function parseTriggerCallbackName(triggerName) {
   const dotIndex = triggerName.indexOf(".");
-  const trigger = triggerName.substring(0, dotIndex);
+  const trigger2 = triggerName.substring(0, dotIndex);
   const phase = triggerName.slice(dotIndex + 1);
-  return [trigger, phase];
+  return [trigger2, phase];
 }
 var AnimationRendererFactory = class {
   constructor(delegate, engine, _zone) {
@@ -34928,11 +34980,11 @@ var AnimationRendererFactory = class {
     const namespaceId = type.id + "-" + this._currentId;
     this._currentId++;
     this.engine.register(namespaceId, hostElement);
-    const registerTrigger = (trigger) => {
-      if (Array.isArray(trigger)) {
-        trigger.forEach(registerTrigger);
+    const registerTrigger = (trigger2) => {
+      if (Array.isArray(trigger2)) {
+        trigger2.forEach(registerTrigger);
       } else {
-        this.engine.registerTrigger(componentId, namespaceId, hostElement, trigger.name, trigger);
+        this.engine.registerTrigger(componentId, namespaceId, hostElement, trigger2.name, trigger2);
       }
     };
     const animationTriggers = type.data["animation"];
@@ -35410,9 +35462,9 @@ var DefaultUrlSerializer = class {
   /** Converts a `UrlTree` into a url */
   serialize(tree2) {
     const segment = `/${serializeSegment(tree2.root, true)}`;
-    const query = serializeQueryParams(tree2.queryParams);
+    const query2 = serializeQueryParams(tree2.queryParams);
     const fragment = typeof tree2.fragment === `string` ? `#${encodeUriFragment(tree2.fragment)}` : "";
-    return `${segment}${query}${fragment}`;
+    return `${segment}${query2}${fragment}`;
   }
 };
 var DEFAULT_SERIALIZER = new DefaultUrlSerializer();
@@ -36072,10 +36124,10 @@ var NavigationError = class extends RouterEvent {
   }
 };
 var RoutesRecognized = class extends RouterEvent {
-  constructor(id, url, urlAfterRedirects, state) {
+  constructor(id, url, urlAfterRedirects, state2) {
     super(id, url);
     this.urlAfterRedirects = urlAfterRedirects;
-    this.state = state;
+    this.state = state2;
     this.type = EventType.RoutesRecognized;
   }
   /** @docsNotRequired */
@@ -36084,10 +36136,10 @@ var RoutesRecognized = class extends RouterEvent {
   }
 };
 var GuardsCheckStart = class extends RouterEvent {
-  constructor(id, url, urlAfterRedirects, state) {
+  constructor(id, url, urlAfterRedirects, state2) {
     super(id, url);
     this.urlAfterRedirects = urlAfterRedirects;
-    this.state = state;
+    this.state = state2;
     this.type = EventType.GuardsCheckStart;
   }
   toString() {
@@ -36095,10 +36147,10 @@ var GuardsCheckStart = class extends RouterEvent {
   }
 };
 var GuardsCheckEnd = class extends RouterEvent {
-  constructor(id, url, urlAfterRedirects, state, shouldActivate) {
+  constructor(id, url, urlAfterRedirects, state2, shouldActivate) {
     super(id, url);
     this.urlAfterRedirects = urlAfterRedirects;
-    this.state = state;
+    this.state = state2;
     this.shouldActivate = shouldActivate;
     this.type = EventType.GuardsCheckEnd;
   }
@@ -36107,10 +36159,10 @@ var GuardsCheckEnd = class extends RouterEvent {
   }
 };
 var ResolveStart = class extends RouterEvent {
-  constructor(id, url, urlAfterRedirects, state) {
+  constructor(id, url, urlAfterRedirects, state2) {
     super(id, url);
     this.urlAfterRedirects = urlAfterRedirects;
-    this.state = state;
+    this.state = state2;
     this.type = EventType.ResolveStart;
   }
   toString() {
@@ -36118,10 +36170,10 @@ var ResolveStart = class extends RouterEvent {
   }
 };
 var ResolveEnd = class extends RouterEvent {
-  constructor(id, url, urlAfterRedirects, state) {
+  constructor(id, url, urlAfterRedirects, state2) {
     super(id, url);
     this.urlAfterRedirects = urlAfterRedirects;
-    this.state = state;
+    this.state = state2;
     this.type = EventType.ResolveEnd;
   }
   toString() {
@@ -36706,9 +36758,9 @@ var RouterStateSnapshot = class extends Tree {
     return serializeNode(this._root);
   }
 };
-function setRouterState(state, node) {
-  node.value._routerState = state;
-  node.children.forEach((c) => setRouterState(state, c));
+function setRouterState(state2, node) {
+  node.value._routerState = state2;
+  node.children.forEach((c) => setRouterState(state2, c));
 }
 function serializeNode(node) {
   const c = node.children.length > 0 ? ` { ${node.children.map(serializeNode).join(", ")} } ` : "";
@@ -38430,7 +38482,7 @@ function createViewTransition(injector, from2, to) {
     const viewTransitionStarted = new Promise((resolve) => {
       resolveViewTransitionStarted = resolve;
     });
-    const transition = document2.startViewTransition(() => {
+    const transition2 = document2.startViewTransition(() => {
       resolveViewTransitionStarted();
       return createRenderPromise(injector);
     });
@@ -38439,7 +38491,7 @@ function createViewTransition(injector, from2, to) {
     } = transitionOptions;
     if (onViewTransitionCreated) {
       runInInjectionContext(injector, () => onViewTransitionCreated({
-        transition,
+        transition: transition2,
         from: from2,
         to
       }));
@@ -38571,9 +38623,9 @@ var NavigationTransitions = class _NavigationTransitions {
               return of(t).pipe(
                 // Fire NavigationStart event
                 switchMap((t2) => {
-                  const transition = this.transitions?.getValue();
+                  const transition2 = this.transitions?.getValue();
                   this.events.next(new NavigationStart(t2.id, this.urlSerializer.serialize(t2.extractedUrl), t2.source, t2.restoredState));
-                  if (transition !== this.transitions?.getValue()) {
+                  if (transition2 !== this.transitions?.getValue()) {
                     return EMPTY;
                   }
                   return Promise.resolve(t2);
@@ -39011,15 +39063,15 @@ var HistoryStateManager = class _HistoryStateManager extends StateManager {
       this.currentPageId = this.browserPageId;
     }
   }
-  setBrowserUrl(url, transition) {
+  setBrowserUrl(url, transition2) {
     const path = url instanceof UrlTree ? this.urlSerializer.serialize(url) : url;
-    if (this.location.isCurrentPathEqualTo(path) || !!transition.extras.replaceUrl) {
+    if (this.location.isCurrentPathEqualTo(path) || !!transition2.extras.replaceUrl) {
       const currentBrowserPageId = this.browserPageId;
-      const state = __spreadValues(__spreadValues({}, transition.extras.state), this.generateNgRouterState(transition.id, currentBrowserPageId));
-      this.location.replaceState(path, "", state);
+      const state2 = __spreadValues(__spreadValues({}, transition2.extras.state), this.generateNgRouterState(transition2.id, currentBrowserPageId));
+      this.location.replaceState(path, "", state2);
     } else {
-      const state = __spreadValues(__spreadValues({}, transition.extras.state), this.generateNgRouterState(transition.id, this.browserPageId + 1));
-      this.location.go(path, "", state);
+      const state2 = __spreadValues(__spreadValues({}, transition2.extras.state), this.generateNgRouterState(transition2.id, this.browserPageId + 1));
+      this.location.go(path, "", state2);
     }
   }
   /**
@@ -39231,9 +39283,9 @@ var Router = class _Router {
    * navigation so that the correct events, guards, etc. are triggered.
    */
   setUpLocationChangeListener() {
-    this.nonRouterCurrentEntryChangeSubscription ??= this.stateManager.registerNonRouterCurrentEntryChangeListener((url, state) => {
+    this.nonRouterCurrentEntryChangeSubscription ??= this.stateManager.registerNonRouterCurrentEntryChangeListener((url, state2) => {
       setTimeout(() => {
-        this.navigateToSyncWithBrowser(url, "popstate", state);
+        this.navigateToSyncWithBrowser(url, "popstate", state2);
       }, 0);
     });
   }
@@ -39244,13 +39296,13 @@ var Router = class _Router {
    * two scenarios represent times when the browser URL/state has been updated and
    * the Router needs to respond to ensure its internal state matches.
    */
-  navigateToSyncWithBrowser(url, source, state) {
+  navigateToSyncWithBrowser(url, source, state2) {
     const extras = {
       replaceUrl: true
     };
-    const restoredState = state?.navigationId ? state : null;
-    if (state) {
-      const stateCopy = __spreadValues({}, state);
+    const restoredState = state2?.navigationId ? state2 : null;
+    if (state2) {
+      const stateCopy = __spreadValues({}, state2);
       delete stateCopy.navigationId;
       delete stateCopy.\u0275routerPageId;
       if (Object.keys(stateCopy).length !== 0) {
@@ -40581,6 +40633,7 @@ var environment = { production: false };
 // src/app/components/navbar/navbar.component.ts
 var NavbarComponent = class _NavbarComponent {
   mobileMenuOpen = false;
+  activeSection = "";
   themeToggle = new EventEmitter();
   menuToggle = new EventEmitter();
   menuClose = new EventEmitter();
@@ -40596,7 +40649,7 @@ var NavbarComponent = class _NavbarComponent {
   static \u0275fac = function NavbarComponent_Factory(__ngFactoryType__) {
     return new (__ngFactoryType__ || _NavbarComponent)();
   };
-  static \u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _NavbarComponent, selectors: [["app-navbar"]], inputs: { mobileMenuOpen: "mobileMenuOpen" }, outputs: { themeToggle: "themeToggle", menuToggle: "menuToggle", menuClose: "menuClose" }, standalone: true, features: [\u0275\u0275StandaloneFeature], decls: 36, vars: 2, consts: [[1, "nav-wrap"], [1, "container"], [1, "nav"], ["href", "#top", "aria-label", "Go to top", 1, "brand", 3, "click"], ["aria-hidden", "true", 1, "brand-badge"], [1, "accent"], ["aria-label", "Primary", 1, "nav-links"], ["href", "#about"], ["href", "#skills"], ["href", "#projects"], ["href", "#experience"], ["href", "#contact"], [1, "nav-actions"], ["type", "button", "aria-label", "Toggle theme", "title", "Toggle theme", 1, "btn", "icon-btn", 3, "click"], ["type", "button", "aria-label", "Open menu", "title", "Menu", 1, "btn", "icon-btn", "hamburger", 3, "click"], ["aria-label", "Mobile", 1, "mobile-menu"], ["href", "#about", 3, "click"], ["href", "#skills", 3, "click"], ["href", "#projects", 3, "click"], ["href", "#experience", 3, "click"], ["href", "#contact", 3, "click"]], template: function NavbarComponent_Template(rf, ctx) {
+  static \u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _NavbarComponent, selectors: [["app-navbar"]], inputs: { mobileMenuOpen: "mobileMenuOpen", activeSection: "activeSection" }, outputs: { themeToggle: "themeToggle", menuToggle: "menuToggle", menuClose: "menuClose" }, standalone: true, features: [\u0275\u0275StandaloneFeature], decls: 36, vars: 22, consts: [[1, "nav-wrap"], [1, "container"], [1, "nav"], ["href", "#top", "aria-label", "Go to top", 1, "brand", 3, "click"], ["aria-hidden", "true", 1, "brand-badge"], [1, "accent"], ["aria-label", "Primary navigation", 1, "nav-links"], ["href", "#about"], ["href", "#skills"], ["href", "#projects"], ["href", "#experience"], ["href", "#contact"], [1, "nav-actions"], ["type", "button", "aria-label", "Toggle theme", "title", "Toggle theme", 1, "btn", "icon-btn", 3, "click"], ["type", "button", "aria-label", "Open menu", "title", "Menu", 1, "btn", "icon-btn", "hamburger", 3, "click"], ["aria-label", "Mobile navigation", 1, "mobile-menu"], ["href", "#about", 3, "click"], ["href", "#skills", 3, "click"], ["href", "#projects", 3, "click"], ["href", "#experience", 3, "click"], ["href", "#contact", 3, "click"]], template: function NavbarComponent_Template(rf, ctx) {
     if (rf & 1) {
       \u0275\u0275elementStart(0, "div", 0)(1, "div", 1)(2, "div", 2)(3, "a", 3);
       \u0275\u0275listener("click", function NavbarComponent_Template_a_click_3_listener() {
@@ -40627,7 +40680,7 @@ var NavbarComponent = class _NavbarComponent {
       \u0275\u0275listener("click", function NavbarComponent_Template_button_click_21_listener() {
         return ctx.onThemeToggle();
       });
-      \u0275\u0275text(22, "\u{1F313}");
+      \u0275\u0275text(22, "\uF313");
       \u0275\u0275elementEnd();
       \u0275\u0275elementStart(23, "button", 14);
       \u0275\u0275listener("click", function NavbarComponent_Template_button_click_23_listener() {
@@ -40667,8 +40720,28 @@ var NavbarComponent = class _NavbarComponent {
       \u0275\u0275elementEnd()()()();
     }
     if (rf & 2) {
-      \u0275\u0275advance(25);
+      \u0275\u0275advance(10);
+      \u0275\u0275classProp("nav-active", ctx.activeSection === "about");
+      \u0275\u0275advance(2);
+      \u0275\u0275classProp("nav-active", ctx.activeSection === "skills");
+      \u0275\u0275advance(2);
+      \u0275\u0275classProp("nav-active", ctx.activeSection === "projects");
+      \u0275\u0275advance(2);
+      \u0275\u0275classProp("nav-active", ctx.activeSection === "experience");
+      \u0275\u0275advance(2);
+      \u0275\u0275classProp("nav-active", ctx.activeSection === "contact");
+      \u0275\u0275advance(7);
       \u0275\u0275classProp("open", ctx.mobileMenuOpen);
+      \u0275\u0275advance();
+      \u0275\u0275classProp("nav-active", ctx.activeSection === "about");
+      \u0275\u0275advance(2);
+      \u0275\u0275classProp("nav-active", ctx.activeSection === "skills");
+      \u0275\u0275advance(2);
+      \u0275\u0275classProp("nav-active", ctx.activeSection === "projects");
+      \u0275\u0275advance(2);
+      \u0275\u0275classProp("nav-active", ctx.activeSection === "experience");
+      \u0275\u0275advance(2);
+      \u0275\u0275classProp("nav-active", ctx.activeSection === "contact");
     }
   }, encapsulation: 2 });
 };
@@ -40678,521 +40751,1100 @@ var NavbarComponent = class _NavbarComponent {
 
 // src/app/components/hero/hero.component.ts
 var HeroComponent = class _HeroComponent {
+  panelState = signal("hidden");
+  joinDate = new Date(2024, 11, 1);
+  // December 2024
+  get yearsExp() {
+    const now = /* @__PURE__ */ new Date();
+    let years = now.getFullYear() - this.joinDate.getFullYear();
+    let months = now.getMonth() - this.joinDate.getMonth();
+    if (months < 0) {
+      years--;
+      months += 12;
+    }
+    const total = Math.round((years + months / 12) * 10) / 10;
+    return total.toFixed(1);
+  }
+  ngAfterViewInit() {
+    setTimeout(() => this.panelState.set("visible"), 80);
+  }
   static \u0275fac = function HeroComponent_Factory(__ngFactoryType__) {
     return new (__ngFactoryType__ || _HeroComponent)();
   };
-  static \u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _HeroComponent, selectors: [["app-hero"]], standalone: true, features: [\u0275\u0275StandaloneFeature], decls: 93, vars: 0, consts: [[1, "hero"], [1, "hero-grid"], [1, "card", "hero-left"], [1, "kicker"], ["aria-hidden", "true", 1, "k-dot"], [1, "accent"], [1, "sub"], [1, "hero-cta"], ["href", "#projects", 1, "btn", "btn-primary"], ["href", "#contact", 1, "btn"], ["href", "#", "title", "Replace with your CV link", 1, "btn", 3, "click"], [1, "meta-row"], [1, "pill"], [1, "card", "hero-right"], [1, "profile"], [1, "avatar"], ["src", "assets/lipunsprofile.jpg", "alt", "Profile picture of Satyajit Sutar", "loading", "lazy", "decoding", "async", 1, "avatar-img"], [1, "mini-grid"], [1, "mini"], [1, "t"], [1, "v"], [1, "code"], [1, "tile"], [1, "tag-row"], ["href", "#", 1, "tag", 3, "click"]], template: function HeroComponent_Template(rf, ctx) {
+  static \u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _HeroComponent, selectors: [["app-hero"]], standalone: true, features: [\u0275\u0275StandaloneFeature], decls: 88, vars: 4, consts: [[1, "hero"], [1, "hero-grid"], [1, "card", "hero-left"], [1, "kicker", "hero-anim"], ["aria-hidden", "true", 1, "k-dot"], [1, "hero-anim"], [1, "accent"], [1, "sub", "hero-anim"], [1, "hero-cta", "hero-anim"], ["href", "#projects", 1, "btn", "btn-primary"], ["href", "#", "title", "Update with your CV link", 1, "btn", 3, "click"], [1, "meta-row", "hero-anim"], [1, "pill"], [1, "card", "hero-right"], [1, "profile"], [1, "avatar"], ["src", "assets/lipunsprofile.jpg", "alt", "Satyajit Sutar \u2014 Angular Developer", "loading", "eager", "decoding", "async", 1, "avatar-img"], [1, "mini-grid"], [1, "mini"], [1, "t"], [1, "v"], [1, "code"], [1, "tile"], [2, "font-size", "13px", "color", "var(--muted)"], [1, "tag-row", 2, "margin-top", "10px"], ["href", "#", 1, "tag", 3, "click"], ["href", "#contact", 1, "tag"]], template: function HeroComponent_Template(rf, ctx) {
     if (rf & 1) {
       \u0275\u0275elementStart(0, "section", 0)(1, "div", 1)(2, "div", 2)(3, "div", 3);
       \u0275\u0275element(4, "span", 4);
-      \u0275\u0275text(5, " Available for freelance \u2022 Angular (SSR / Performance / SEO) ");
+      \u0275\u0275text(5, " Open to work \u2022 Angular Developer \u2022 Hyderabad ");
       \u0275\u0275elementEnd();
-      \u0275\u0275elementStart(6, "h1");
+      \u0275\u0275elementStart(6, "h1", 5);
       \u0275\u0275text(7, " Angular Developer building ");
-      \u0275\u0275elementStart(8, "span", 5);
+      \u0275\u0275elementStart(8, "span", 6);
       \u0275\u0275text(9, "fast");
       \u0275\u0275elementEnd();
       \u0275\u0275text(10, ", ");
-      \u0275\u0275elementStart(11, "span", 5);
-      \u0275\u0275text(12, "SEO-ready");
+      \u0275\u0275elementStart(11, "span", 6);
+      \u0275\u0275text(12, "scalable");
       \u0275\u0275elementEnd();
-      \u0275\u0275text(13, " web apps. ");
+      \u0275\u0275text(13, " web applications. ");
       \u0275\u0275elementEnd();
-      \u0275\u0275elementStart(14, "p", 6);
-      \u0275\u0275text(15, " I build public-facing and enterprise Angular applications with modern Angular (standalone components, signals), SSR/hydration, performance optimization, and clean UI/UX. ");
+      \u0275\u0275elementStart(14, "p", 7);
+      \u0275\u0275text(15, " I craft enterprise-grade Angular apps with standalone components, reactive forms, RxJS data flows, and pixel-perfect UI \u2014 focused on performance and clean code. ");
       \u0275\u0275elementEnd();
-      \u0275\u0275elementStart(16, "div", 7)(17, "a", 8);
+      \u0275\u0275elementStart(16, "div", 8)(17, "a", 9);
       \u0275\u0275text(18, "View Projects");
       \u0275\u0275elementEnd();
-      \u0275\u0275elementStart(19, "a", 9);
-      \u0275\u0275text(20, "Contact");
-      \u0275\u0275elementEnd();
-      \u0275\u0275elementStart(21, "a", 10);
-      \u0275\u0275listener("click", function HeroComponent_Template_a_click_21_listener($event) {
+      \u0275\u0275elementStart(19, "a", 10);
+      \u0275\u0275listener("click", function HeroComponent_Template_a_click_19_listener($event) {
         return $event.preventDefault();
       });
-      \u0275\u0275text(22, "Download CV");
+      \u0275\u0275text(20, "Download CV");
       \u0275\u0275elementEnd()();
-      \u0275\u0275elementStart(23, "div", 11)(24, "span", 12);
-      \u0275\u0275text(25, "\u26A1 ");
-      \u0275\u0275elementStart(26, "b");
-      \u0275\u0275text(27, "1.6 yrs");
+      \u0275\u0275elementStart(21, "div", 11)(22, "span", 12)(23, "b");
+      \u0275\u0275text(24);
       \u0275\u0275elementEnd();
-      \u0275\u0275text(28, " Experience");
+      \u0275\u0275text(25, " Angular");
       \u0275\u0275elementEnd();
-      \u0275\u0275elementStart(29, "span", 12);
-      \u0275\u0275text(30, "\u{1F170}\uFE0F ");
-      \u0275\u0275elementStart(31, "b");
-      \u0275\u0275text(32, "Angular");
+      \u0275\u0275elementStart(26, "span", 12)(27, "b");
+      \u0275\u0275text(28, "ERP");
+      \u0275\u0275elementEnd();
+      \u0275\u0275text(29, " & SaaS");
+      \u0275\u0275elementEnd();
+      \u0275\u0275elementStart(30, "span", 12)(31, "b");
+      \u0275\u0275text(32, "TypeScript");
       \u0275\u0275elementEnd()();
-      \u0275\u0275elementStart(33, "span", 12);
-      \u0275\u0275text(34, "\u{1F3A8} ");
-      \u0275\u0275elementStart(35, "b");
-      \u0275\u0275text(36, "HTML/CSS/JS");
-      \u0275\u0275elementEnd()();
-      \u0275\u0275elementStart(37, "span", 12);
-      \u0275\u0275text(38, "\u{1F3E2} ");
-      \u0275\u0275elementStart(39, "b");
-      \u0275\u0275text(40, "ERP \u2022 SaaS");
+      \u0275\u0275elementStart(33, "span", 12)(34, "b");
+      \u0275\u0275text(35, "RxJS");
       \u0275\u0275elementEnd()()()();
-      \u0275\u0275elementStart(41, "aside", 13)(42, "div", 14)(43, "div", 15);
-      \u0275\u0275element(44, "img", 16);
+      \u0275\u0275elementStart(36, "aside", 13)(37, "div", 14)(38, "div", 15);
+      \u0275\u0275element(39, "img", 16);
       \u0275\u0275elementEnd();
-      \u0275\u0275elementStart(45, "div")(46, "h3");
-      \u0275\u0275text(47, "Satyajit Sutar \u2022 Angular Developer");
+      \u0275\u0275elementStart(40, "div")(41, "h3");
+      \u0275\u0275text(42, "Satyajit Sutar");
       \u0275\u0275elementEnd();
-      \u0275\u0275elementStart(48, "p");
-      \u0275\u0275text(49, "Hyderabad \u2022 Angular \u2022 HTML/CSS/JS");
+      \u0275\u0275elementStart(43, "p");
+      \u0275\u0275text(44, "Angular Developer \u2022 Hyderabad, India");
       \u0275\u0275elementEnd()()();
-      \u0275\u0275elementStart(50, "div", 17)(51, "div", 18)(52, "div", 19);
-      \u0275\u0275text(53, "Primary Skills");
+      \u0275\u0275elementStart(45, "div", 17)(46, "div", 18)(47, "div", 19);
+      \u0275\u0275text(48, "Primary Stack");
       \u0275\u0275elementEnd();
-      \u0275\u0275elementStart(54, "div", 20);
-      \u0275\u0275text(55, "Angular \u2022 HTML");
+      \u0275\u0275elementStart(49, "div", 20);
+      \u0275\u0275text(50, "Angular 18");
       \u0275\u0275elementEnd();
-      \u0275\u0275elementStart(56, "div", 21);
-      \u0275\u0275text(57, "CSS \u2022 JavaScript \u2022 TypeScript");
+      \u0275\u0275elementStart(51, "div", 21);
+      \u0275\u0275text(52, "TypeScript \u2022 RxJS \u2022 HTML/CSS");
       \u0275\u0275elementEnd()();
-      \u0275\u0275elementStart(58, "div", 18)(59, "div", 19);
-      \u0275\u0275text(60, "Focus Areas");
+      \u0275\u0275elementStart(53, "div", 18)(54, "div", 19);
+      \u0275\u0275text(55, "Focus");
       \u0275\u0275elementEnd();
-      \u0275\u0275elementStart(61, "div", 20);
-      \u0275\u0275text(62, "UI \u2022 Components");
+      \u0275\u0275elementStart(56, "div", 20);
+      \u0275\u0275text(57, "UI Architecture");
       \u0275\u0275elementEnd();
-      \u0275\u0275elementStart(63, "div", 21);
-      \u0275\u0275text(64, "reusable UI \u2022 clean screens");
+      \u0275\u0275elementStart(58, "div", 21);
+      \u0275\u0275text(59, "Components \u2022 Forms \u2022 Performance");
       \u0275\u0275elementEnd()();
-      \u0275\u0275elementStart(65, "div", 18)(66, "div", 19);
-      \u0275\u0275text(67, "Recent Work");
+      \u0275\u0275elementStart(60, "div", 18)(61, "div", 19);
+      \u0275\u0275text(62, "Recent Project");
       \u0275\u0275elementEnd();
-      \u0275\u0275elementStart(68, "div", 20);
-      \u0275\u0275text(69, "REval ERP");
+      \u0275\u0275elementStart(63, "div", 20);
+      \u0275\u0275text(64, "REval ERP");
       \u0275\u0275elementEnd();
-      \u0275\u0275elementStart(70, "div", 21);
-      \u0275\u0275text(71, "forms \u2022 tables \u2022 validations");
+      \u0275\u0275elementStart(65, "div", 21);
+      \u0275\u0275text(66, "Planning \u2022 Forms \u2022 RBAC");
       \u0275\u0275elementEnd()();
-      \u0275\u0275elementStart(72, "div", 18)(73, "div", 19);
-      \u0275\u0275text(74, "Open To");
+      \u0275\u0275elementStart(67, "div", 18)(68, "div", 19);
+      \u0275\u0275text(69, "Available For");
       \u0275\u0275elementEnd();
-      \u0275\u0275elementStart(75, "div", 20);
-      \u0275\u0275text(76, "Full-time / Freelance");
+      \u0275\u0275elementStart(70, "div", 20);
+      \u0275\u0275text(71, "Full-time / Freelance");
       \u0275\u0275elementEnd();
-      \u0275\u0275elementStart(77, "div", 21);
-      \u0275\u0275text(78, "frontend \u2022 angular \u2022 ui");
+      \u0275\u0275elementStart(72, "div", 21);
+      \u0275\u0275text(73, "Angular \u2022 Frontend \u2022 UI");
       \u0275\u0275elementEnd()()();
-      \u0275\u0275elementStart(79, "div", 22)(80, "h3");
-      \u0275\u0275text(81, "Quick Links");
+      \u0275\u0275elementStart(74, "div", 22)(75, "h3");
+      \u0275\u0275text(76, "Connect with me");
       \u0275\u0275elementEnd();
-      \u0275\u0275elementStart(82, "p");
-      \u0275\u0275text(83, "Replace with your real links.");
+      \u0275\u0275elementStart(77, "p", 23);
+      \u0275\u0275text(78, "Replace with your actual profile links.");
       \u0275\u0275elementEnd();
-      \u0275\u0275elementStart(84, "div", 23)(85, "a", 24);
-      \u0275\u0275listener("click", function HeroComponent_Template_a_click_85_listener($event) {
+      \u0275\u0275elementStart(79, "div", 24)(80, "a", 25);
+      \u0275\u0275listener("click", function HeroComponent_Template_a_click_80_listener($event) {
         return $event.preventDefault();
       });
-      \u0275\u0275text(86, "GitHub");
+      \u0275\u0275text(81, "\uF517 GitHub");
       \u0275\u0275elementEnd();
-      \u0275\u0275elementStart(87, "a", 24);
-      \u0275\u0275listener("click", function HeroComponent_Template_a_click_87_listener($event) {
+      \u0275\u0275elementStart(82, "a", 25);
+      \u0275\u0275listener("click", function HeroComponent_Template_a_click_82_listener($event) {
         return $event.preventDefault();
       });
-      \u0275\u0275text(88, "LinkedIn");
+      \u0275\u0275text(83, "\uF465 LinkedIn");
       \u0275\u0275elementEnd();
-      \u0275\u0275elementStart(89, "a", 24);
-      \u0275\u0275listener("click", function HeroComponent_Template_a_click_89_listener($event) {
+      \u0275\u0275elementStart(84, "a", 25);
+      \u0275\u0275listener("click", function HeroComponent_Template_a_click_84_listener($event) {
         return $event.preventDefault();
       });
-      \u0275\u0275text(90, "Resume");
+      \u0275\u0275text(85, "\uF4C4 Resume");
       \u0275\u0275elementEnd();
-      \u0275\u0275elementStart(91, "a", 24);
-      \u0275\u0275listener("click", function HeroComponent_Template_a_click_91_listener($event) {
-        return $event.preventDefault();
-      });
-      \u0275\u0275text(92, "Email");
+      \u0275\u0275elementStart(86, "a", 26);
+      \u0275\u0275text(87, "\u2709 Email");
       \u0275\u0275elementEnd()()()()()();
     }
-  }, encapsulation: 2 });
+    if (rf & 2) {
+      \u0275\u0275advance(2);
+      \u0275\u0275property("@heroLeftAnim", ctx.panelState());
+      \u0275\u0275advance(22);
+      \u0275\u0275textInterpolate1("", ctx.yearsExp, " yrs");
+      \u0275\u0275advance(12);
+      \u0275\u0275property("@heroRightAnim", ctx.panelState());
+      \u0275\u0275advance(9);
+      \u0275\u0275property("@miniStagger", ctx.panelState());
+    }
+  }, dependencies: [CommonModule], encapsulation: 2, data: { animation: [
+    // Left panel: stagger children in
+    trigger("heroLeftAnim", [
+      transition("hidden => visible", [
+        query(".hero-anim", [
+          style({ opacity: 0, transform: "translateY(30px)" }),
+          stagger(90, [
+            animate("0.65s cubic-bezier(0.2, 0.9, 0.2, 1)", style({ opacity: 1, transform: "translateY(0)" }))
+          ])
+        ], { optional: true })
+      ])
+    ]),
+    // Right panel: slide in from right
+    trigger("heroRightAnim", [
+      state("hidden", style({ opacity: 0, transform: "translateX(40px)" })),
+      state("visible", style({ opacity: 1, transform: "translateX(0)" })),
+      transition("hidden => visible", animate("0.75s 0.3s cubic-bezier(0.2, 0.9, 0.2, 1)"))
+    ]),
+    // Mini-grid items stagger
+    trigger("miniStagger", [
+      transition("hidden => visible", [
+        query(".mini", [
+          style({ opacity: 0, transform: "scale(0.9) translateY(12px)" }),
+          stagger(80, [
+            animate("0.5s 0.5s cubic-bezier(0.2, 0.9, 0.2, 1)", style({ opacity: 1, transform: "none" }))
+          ])
+        ], { optional: true })
+      ])
+    ])
+  ] } });
 };
 (() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(HeroComponent, { className: "HeroComponent", filePath: "src\\app\\components\\hero\\hero.component.ts", lineNumber: 8 });
+  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(HeroComponent, { className: "HeroComponent", filePath: "src\\app\\components\\hero\\hero.component.ts", lineNumber: 45 });
 })();
 
 // src/app/components/about/about.component.ts
+function AboutComponent_div_8_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "div", 19)(1, "div", 20);
+    \u0275\u0275text(2);
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(3, "div", 21);
+    \u0275\u0275text(4);
+    \u0275\u0275elementEnd()();
+  }
+  if (rf & 2) {
+    const s_r1 = ctx.$implicit;
+    const ctx_r1 = \u0275\u0275nextContext();
+    \u0275\u0275advance(2);
+    \u0275\u0275textInterpolate(ctx_r1.formatStat(s_r1));
+    \u0275\u0275advance(2);
+    \u0275\u0275textInterpolate(s_r1.label);
+  }
+}
 var AboutComponent = class _AboutComponent {
+  doc = inject(DOCUMENT2);
+  sectionState = signal("hidden");
+  // Join date — keep in sync with experience.component.ts
+  joinDate = new Date(2024, 11, 1);
+  // December 2024
+  /** Decimal years from joinDate to today, e.g. 1.3 */
+  get yearsExperience() {
+    const now = /* @__PURE__ */ new Date();
+    let years = now.getFullYear() - this.joinDate.getFullYear();
+    let months = now.getMonth() - this.joinDate.getMonth();
+    if (months < 0) {
+      years--;
+      months += 12;
+    }
+    return Math.round((years + months / 12) * 10) / 10;
+  }
+  // Animated counter stats — Years Experience is computed dynamically
+  stats = signal([
+    { target: this.yearsExperience, suffix: "+", label: "Years Experience", decimal: true, current: 0 },
+    { target: 20, suffix: "+", label: "Components Built", decimal: false, current: 0 },
+    { target: 3, suffix: "", label: "Products Shipped", decimal: false, current: 0 },
+    { target: 28, suffix: "%", label: "Bundle Reduction", decimal: false, current: 0 }
+  ]);
+  formatStat(s) {
+    return (s.decimal ? s.current.toFixed(1) : Math.round(s.current).toString()) + s.suffix;
+  }
+  ngAfterViewInit() {
+    const section = this.doc.querySelector("#about");
+    if (!section)
+      return;
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          this.sectionState.set("visible");
+          setTimeout(() => this.runCounters(), 300);
+          io.disconnect();
+        }
+      });
+    }, { threshold: 0.15 });
+    io.observe(section);
+  }
+  runCounters() {
+    const win = this.doc.defaultView;
+    if (!win)
+      return;
+    const duration = 1600;
+    const start = win.performance.now();
+    const frame = (now) => {
+      const elapsed = now - start;
+      const p = Math.min(elapsed / duration, 1);
+      const eased = 1 - Math.pow(1 - p, 3);
+      this.stats.update((list) => list.map((s) => __spreadProps(__spreadValues({}, s), { current: s.target * eased })));
+      if (p < 1)
+        win.requestAnimationFrame(frame);
+    };
+    win.requestAnimationFrame(frame);
+  }
   static \u0275fac = function AboutComponent_Factory(__ngFactoryType__) {
     return new (__ngFactoryType__ || _AboutComponent)();
   };
-  static \u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _AboutComponent, selectors: [["app-about"]], standalone: true, features: [\u0275\u0275StandaloneFeature], decls: 39, vars: 0, consts: [["id", "about"], [1, "section-head"], [1, "grid-2"], [1, "tile"], ["aria-hidden", "true", 1, "tile-icon"], ["width", "24", "height", "24", "viewBox", "0 0 24 24", "fill", "none", "stroke", "currentColor", "stroke-width", "2", "stroke-linecap", "round", "stroke-linejoin", "round"], ["d", "M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"], ["cx", "12", "cy", "7", "r", "4"], ["d", "M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"], [1, "contact-details-list"], [1, "contact-item"], [1, "contact-label"], [1, "contact-value"]], template: function AboutComponent_Template(rf, ctx) {
+  static \u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _AboutComponent, selectors: [["app-about"]], standalone: true, features: [\u0275\u0275StandaloneFeature], decls: 59, vars: 4, consts: [["id", "about"], [1, "section-head"], [1, "about-stats"], ["class", "stat-item", 4, "ngFor", "ngForOf"], [1, "grid-2"], [1, "tile"], ["aria-hidden", "true", 1, "tile-icon"], ["width", "24", "height", "24", "viewBox", "0 0 24 24", "fill", "none", "stroke", "currentColor", "stroke-width", "2", "stroke-linecap", "round", "stroke-linejoin", "round"], ["d", "M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"], ["cx", "12", "cy", "7", "r", "4"], [2, "margin-top", "10px"], [1, "tag-row", 2, "margin-top", "14px"], [1, "tag"], ["d", "M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"], [1, "contact-details-list"], [1, "contact-item"], [1, "contact-label"], [1, "contact-value"], [1, "contact-value", 2, "color", "var(--ok)", "font-weight", "700"], [1, "stat-item"], [1, "stat-value"], [1, "stat-label"]], template: function AboutComponent_Template(rf, ctx) {
     if (rf & 1) {
       \u0275\u0275elementStart(0, "section", 0)(1, "div", 1)(2, "div")(3, "h2");
-      \u0275\u0275text(4, "About");
+      \u0275\u0275text(4, "About Me");
       \u0275\u0275elementEnd();
       \u0275\u0275elementStart(5, "p");
-      \u0275\u0275text(6, "Angular Developer with hands-on project experience.");
+      \u0275\u0275text(6, "Angular Developer passionate about building clean, performant, and scalable web applications.");
       \u0275\u0275elementEnd()()();
-      \u0275\u0275elementStart(7, "div", 2)(8, "div", 3)(9, "div", 4);
+      \u0275\u0275elementStart(7, "div", 2);
+      \u0275\u0275template(8, AboutComponent_div_8_Template, 5, 2, "div", 3);
+      \u0275\u0275elementEnd();
+      \u0275\u0275elementStart(9, "div", 4)(10, "div", 5)(11, "div", 6);
       \u0275\u0275namespaceSVG();
-      \u0275\u0275elementStart(10, "svg", 5);
-      \u0275\u0275element(11, "path", 6)(12, "circle", 7);
+      \u0275\u0275elementStart(12, "svg", 7);
+      \u0275\u0275element(13, "path", 8)(14, "circle", 9);
       \u0275\u0275elementEnd()();
       \u0275\u0275namespaceHTML();
-      \u0275\u0275elementStart(13, "h3");
-      \u0275\u0275text(14, "Profile");
+      \u0275\u0275elementStart(15, "h3");
+      \u0275\u0275text(16, "Profile");
       \u0275\u0275elementEnd();
-      \u0275\u0275elementStart(15, "p");
-      \u0275\u0275text(16, " I am an Angular Developer with 1.6 years of experience working on enterprise and SaaS applications. I focus on clean UI, reusable components, and stable frontend architecture. ");
-      \u0275\u0275elementEnd()();
-      \u0275\u0275elementStart(17, "div", 3)(18, "div", 4);
+      \u0275\u0275elementStart(17, "p");
+      \u0275\u0275text(18, " I am an Angular Developer with 1.6 years of hands-on experience building enterprise ERP and SaaS web applications. I specialise in crafting reusable component libraries, reactive form architectures, and performance-optimised Angular frontends. ");
+      \u0275\u0275elementEnd();
+      \u0275\u0275elementStart(19, "p", 10);
+      \u0275\u0275text(20, " I thrive in collaborative agile teams and take pride in writing clean, maintainable TypeScript \u2014 code that future teammates can read and extend without headaches. ");
+      \u0275\u0275elementEnd();
+      \u0275\u0275elementStart(21, "div", 11)(22, "span", 12);
+      \u0275\u0275text(23, "Angular");
+      \u0275\u0275elementEnd();
+      \u0275\u0275elementStart(24, "span", 12);
+      \u0275\u0275text(25, "TypeScript");
+      \u0275\u0275elementEnd();
+      \u0275\u0275elementStart(26, "span", 12);
+      \u0275\u0275text(27, "RxJS");
+      \u0275\u0275elementEnd();
+      \u0275\u0275elementStart(28, "span", 12);
+      \u0275\u0275text(29, "REST APIs");
+      \u0275\u0275elementEnd();
+      \u0275\u0275elementStart(30, "span", 12);
+      \u0275\u0275text(31, "Git");
+      \u0275\u0275elementEnd()()();
+      \u0275\u0275elementStart(32, "div", 5)(33, "div", 6);
       \u0275\u0275namespaceSVG();
-      \u0275\u0275elementStart(19, "svg", 5);
-      \u0275\u0275element(20, "path", 8);
+      \u0275\u0275elementStart(34, "svg", 7);
+      \u0275\u0275element(35, "path", 13);
       \u0275\u0275elementEnd()();
       \u0275\u0275namespaceHTML();
-      \u0275\u0275elementStart(21, "h3");
-      \u0275\u0275text(22, "Contact Details");
+      \u0275\u0275elementStart(36, "h3");
+      \u0275\u0275text(37, "Get In Touch");
       \u0275\u0275elementEnd();
-      \u0275\u0275elementStart(23, "div", 9)(24, "div", 10)(25, "span", 11);
-      \u0275\u0275text(26, "Phone:");
+      \u0275\u0275elementStart(38, "div", 14)(39, "div", 15)(40, "span", 16);
+      \u0275\u0275text(41, "Phone:");
       \u0275\u0275elementEnd();
-      \u0275\u0275elementStart(27, "span", 12);
-      \u0275\u0275text(28, "7008693797");
+      \u0275\u0275elementStart(42, "span", 17);
+      \u0275\u0275text(43, "7008693797");
       \u0275\u0275elementEnd()();
-      \u0275\u0275elementStart(29, "div", 10)(30, "span", 11);
-      \u0275\u0275text(31, "Email:");
+      \u0275\u0275elementStart(44, "div", 15)(45, "span", 16);
+      \u0275\u0275text(46, "Email:");
       \u0275\u0275elementEnd();
-      \u0275\u0275elementStart(32, "span", 12);
-      \u0275\u0275text(33, "satyajitsutar32@gmail.com");
+      \u0275\u0275elementStart(47, "span", 17);
+      \u0275\u0275text(48, "satyajitsutar32@gmail.com");
       \u0275\u0275elementEnd()();
-      \u0275\u0275elementStart(34, "div", 10)(35, "span", 11);
-      \u0275\u0275text(36, "Address:");
+      \u0275\u0275elementStart(49, "div", 15)(50, "span", 16);
+      \u0275\u0275text(51, "Location:");
       \u0275\u0275elementEnd();
-      \u0275\u0275elementStart(37, "span", 12);
-      \u0275\u0275text(38, "Hyderabad");
+      \u0275\u0275elementStart(52, "span", 17);
+      \u0275\u0275text(53, "Hyderabad, India");
+      \u0275\u0275elementEnd()();
+      \u0275\u0275elementStart(54, "div", 15)(55, "span", 16);
+      \u0275\u0275text(56, "Status:");
+      \u0275\u0275elementEnd();
+      \u0275\u0275elementStart(57, "span", 18);
+      \u0275\u0275text(58, "Open to opportunities");
       \u0275\u0275elementEnd()()()()()();
     }
-  }, encapsulation: 2 });
+    if (rf & 2) {
+      \u0275\u0275advance();
+      \u0275\u0275property("@headerReveal", ctx.sectionState());
+      \u0275\u0275advance(6);
+      \u0275\u0275property("@statsReveal", ctx.sectionState());
+      \u0275\u0275advance();
+      \u0275\u0275property("ngForOf", ctx.stats());
+      \u0275\u0275advance();
+      \u0275\u0275property("@tilesReveal", ctx.sectionState());
+    }
+  }, dependencies: [CommonModule, NgForOf], encapsulation: 2, data: { animation: [
+    trigger("headerReveal", [
+      state("hidden", style({ opacity: 0, transform: "scale(0.97) translateY(10px)" })),
+      state("visible", style({ opacity: 1, transform: "none" })),
+      transition("hidden => visible", animate("0.55s cubic-bezier(0.2, 0.9, 0.2, 1)"))
+    ]),
+    trigger("tilesReveal", [
+      transition("hidden => visible", [
+        query(".tile", [
+          style({ opacity: 0, transform: "translateY(28px)" }),
+          stagger(120, [
+            animate("0.6s cubic-bezier(0.2, 0.9, 0.2, 1)", style({ opacity: 1, transform: "none" }))
+          ])
+        ], { optional: true })
+      ])
+    ]),
+    trigger("statsReveal", [
+      transition("hidden => visible", [
+        query(".stat-item", [
+          style({ opacity: 0, transform: "scale(0.85) translateY(14px)" }),
+          stagger(90, [
+            animate("0.5s cubic-bezier(0.2, 0.9, 0.2, 1)", style({ opacity: 1, transform: "none" }))
+          ])
+        ], { optional: true })
+      ])
+    ])
+  ] } });
 };
 (() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(AboutComponent, { className: "AboutComponent", filePath: "src\\app\\components\\about\\about.component.ts", lineNumber: 4 });
+  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(AboutComponent, { className: "AboutComponent", filePath: "src\\app\\components\\about\\about.component.ts", lineNumber: 50 });
 })();
 
 // src/app/components/skills/skills.component.ts
-var SkillsComponent = class _SkillsComponent {
-  static \u0275fac = function SkillsComponent_Factory(__ngFactoryType__) {
-    return new (__ngFactoryType__ || _SkillsComponent)();
-  };
-  static \u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _SkillsComponent, selectors: [["app-skills"]], standalone: true, features: [\u0275\u0275StandaloneFeature], decls: 48, vars: 0, consts: [["id", "skills"], [1, "section-head"], [1, "grid-3"], [1, "tile"], [1, "tag-row"], [1, "tag"]], template: function SkillsComponent_Template(rf, ctx) {
-    if (rf & 1) {
-      \u0275\u0275elementStart(0, "section", 0)(1, "div", 1)(2, "div")(3, "h2");
-      \u0275\u0275text(4, "Skills");
-      \u0275\u0275elementEnd();
-      \u0275\u0275elementStart(5, "p");
-      \u0275\u0275text(6, "Core frontend skills and frameworks.");
-      \u0275\u0275elementEnd()()();
-      \u0275\u0275elementStart(7, "div", 2)(8, "div", 3)(9, "h3");
-      \u0275\u0275text(10, "Frontend");
-      \u0275\u0275elementEnd();
-      \u0275\u0275elementStart(11, "p");
-      \u0275\u0275text(12, "Strong foundation in UI development and responsive design.");
-      \u0275\u0275elementEnd();
-      \u0275\u0275elementStart(13, "div", 4)(14, "span", 5);
-      \u0275\u0275text(15, "Angular");
-      \u0275\u0275elementEnd();
-      \u0275\u0275elementStart(16, "span", 5);
-      \u0275\u0275text(17, "HTML");
-      \u0275\u0275elementEnd();
-      \u0275\u0275elementStart(18, "span", 5);
-      \u0275\u0275text(19, "CSS");
-      \u0275\u0275elementEnd();
-      \u0275\u0275elementStart(20, "span", 5);
-      \u0275\u0275text(21, "JavaScript");
-      \u0275\u0275elementEnd()()();
-      \u0275\u0275elementStart(22, "div", 3)(23, "h3");
-      \u0275\u0275text(24, "Framework & Tools");
-      \u0275\u0275elementEnd();
-      \u0275\u0275elementStart(25, "p");
-      \u0275\u0275text(26, "Modern Angular practices with clean architecture.");
-      \u0275\u0275elementEnd();
-      \u0275\u0275elementStart(27, "div", 4)(28, "span", 5);
-      \u0275\u0275text(29, "Angular");
-      \u0275\u0275elementEnd();
-      \u0275\u0275elementStart(30, "span", 5);
-      \u0275\u0275text(31, "TypeScript");
-      \u0275\u0275elementEnd();
-      \u0275\u0275elementStart(32, "span", 5);
-      \u0275\u0275text(33, "RxJS");
-      \u0275\u0275elementEnd();
-      \u0275\u0275elementStart(34, "span", 5);
-      \u0275\u0275text(35, "Git");
-      \u0275\u0275elementEnd()()();
-      \u0275\u0275elementStart(36, "div", 3)(37, "h3");
-      \u0275\u0275text(38, "Others");
-      \u0275\u0275elementEnd();
-      \u0275\u0275elementStart(39, "p");
-      \u0275\u0275text(40, "Additional skills ");
-      \u0275\u0275elementEnd();
-      \u0275\u0275elementStart(41, "div", 4)(42, "span", 5);
-      \u0275\u0275text(43, "REST API");
-      \u0275\u0275elementEnd();
-      \u0275\u0275elementStart(44, "span", 5);
-      \u0275\u0275text(45, "UI Debugging");
-      \u0275\u0275elementEnd();
-      \u0275\u0275elementStart(46, "span", 5);
-      \u0275\u0275text(47, "Performance");
-      \u0275\u0275elementEnd()()()()();
-    }
-  }, encapsulation: 2 });
-};
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(SkillsComponent, { className: "SkillsComponent", filePath: "src\\app\\components\\skills\\skills.component.ts", lineNumber: 4 });
-})();
-
-// src/app/components/projects/projects.component.ts
-var ProjectsComponent = class _ProjectsComponent {
-  static \u0275fac = function ProjectsComponent_Factory(__ngFactoryType__) {
-    return new (__ngFactoryType__ || _ProjectsComponent)();
-  };
-  static \u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _ProjectsComponent, selectors: [["app-projects"]], standalone: true, features: [\u0275\u0275StandaloneFeature], decls: 70, vars: 0, consts: [["id", "projects"], [1, "section-head"], [1, "grid-3"], [1, "project"], [1, "top"], [1, "badge"], [1, "tag-row"], [1, "tag"], [1, "actions"], ["href", "#", 1, "link", 3, "click"]], template: function ProjectsComponent_Template(rf, ctx) {
-    if (rf & 1) {
-      \u0275\u0275elementStart(0, "section", 0)(1, "div", 1)(2, "div")(3, "h2");
-      \u0275\u0275text(4, "Projects");
-      \u0275\u0275elementEnd();
-      \u0275\u0275elementStart(5, "p");
-      \u0275\u0275text(6, "Selected real-world project experience (you can update details later).");
-      \u0275\u0275elementEnd()()();
-      \u0275\u0275elementStart(7, "div", 2)(8, "article", 3)(9, "div", 4)(10, "span", 5);
-      \u0275\u0275text(11, "Enterprise");
-      \u0275\u0275elementEnd();
-      \u0275\u0275elementStart(12, "span", 5);
-      \u0275\u0275text(13, "ERP");
-      \u0275\u0275elementEnd()();
-      \u0275\u0275elementStart(14, "h3");
-      \u0275\u0275text(15, "REval ERP");
-      \u0275\u0275elementEnd();
-      \u0275\u0275elementStart(16, "p");
-      \u0275\u0275text(17, "ERP application UI with planning modules, forms, validations and role-based actions.");
-      \u0275\u0275elementEnd();
-      \u0275\u0275elementStart(18, "div", 6)(19, "span", 7);
-      \u0275\u0275text(20, "Angular");
-      \u0275\u0275elementEnd();
-      \u0275\u0275elementStart(21, "span", 7);
-      \u0275\u0275text(22, "Forms");
-      \u0275\u0275elementEnd();
-      \u0275\u0275elementStart(23, "span", 7);
-      \u0275\u0275text(24, "Tables");
-      \u0275\u0275elementEnd();
-      \u0275\u0275elementStart(25, "span", 7);
-      \u0275\u0275text(26, "UI Fixes");
-      \u0275\u0275elementEnd()();
-      \u0275\u0275elementStart(27, "div", 8)(28, "a", 9);
-      \u0275\u0275listener("click", function ProjectsComponent_Template_a_click_28_listener($event) {
-        return $event.preventDefault();
-      });
-      \u0275\u0275text(29, "Project Details");
-      \u0275\u0275elementEnd()()();
-      \u0275\u0275elementStart(30, "article", 3)(31, "div", 4)(32, "span", 5);
-      \u0275\u0275text(33, "SaaS");
-      \u0275\u0275elementEnd();
-      \u0275\u0275elementStart(34, "span", 5);
-      \u0275\u0275text(35, "POS");
-      \u0275\u0275elementEnd()();
-      \u0275\u0275elementStart(36, "h3");
-      \u0275\u0275text(37, "SaaS POS Application");
-      \u0275\u0275elementEnd();
-      \u0275\u0275elementStart(38, "p");
-      \u0275\u0275text(39, "POS-style SaaS UI (dummy text \u2014 replace with your real workflow and features later).");
-      \u0275\u0275elementEnd();
-      \u0275\u0275elementStart(40, "div", 6)(41, "span", 7);
-      \u0275\u0275text(42, "Angular");
-      \u0275\u0275elementEnd();
-      \u0275\u0275elementStart(43, "span", 7);
-      \u0275\u0275text(44, "UI");
-      \u0275\u0275elementEnd();
-      \u0275\u0275elementStart(45, "span", 7);
-      \u0275\u0275text(46, "API");
-      \u0275\u0275elementEnd()();
-      \u0275\u0275elementStart(47, "div", 8)(48, "a", 9);
-      \u0275\u0275listener("click", function ProjectsComponent_Template_a_click_48_listener($event) {
-        return $event.preventDefault();
-      });
-      \u0275\u0275text(49, "Project Details");
-      \u0275\u0275elementEnd()()();
-      \u0275\u0275elementStart(50, "article", 3)(51, "div", 4)(52, "span", 5);
-      \u0275\u0275text(53, "Planning");
-      \u0275\u0275elementEnd();
-      \u0275\u0275elementStart(54, "span", 5);
-      \u0275\u0275text(55, "ITC");
-      \u0275\u0275elementEnd()();
-      \u0275\u0275elementStart(56, "h3");
-      \u0275\u0275text(57, "ITC Planning");
-      \u0275\u0275elementEnd();
-      \u0275\u0275elementStart(58, "p");
-      \u0275\u0275text(59, "Planning module screens (dummy text \u2014 update later with exact modules and responsibilities).");
-      \u0275\u0275elementEnd();
-      \u0275\u0275elementStart(60, "div", 6)(61, "span", 7);
-      \u0275\u0275text(62, "Angular");
-      \u0275\u0275elementEnd();
-      \u0275\u0275elementStart(63, "span", 7);
-      \u0275\u0275text(64, "Tables");
-      \u0275\u0275elementEnd();
-      \u0275\u0275elementStart(65, "span", 7);
-      \u0275\u0275text(66, "Export");
-      \u0275\u0275elementEnd()();
-      \u0275\u0275elementStart(67, "div", 8)(68, "a", 9);
-      \u0275\u0275listener("click", function ProjectsComponent_Template_a_click_68_listener($event) {
-        return $event.preventDefault();
-      });
-      \u0275\u0275text(69, "Project Details");
-      \u0275\u0275elementEnd()()()()();
-    }
-  }, encapsulation: 2 });
-};
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(ProjectsComponent, { className: "ProjectsComponent", filePath: "src\\app\\components\\projects\\projects.component.ts", lineNumber: 4 });
-})();
-
-// src/app/components/experience/experience.component.ts
-function ExperienceComponent_div_9_Template(rf, ctx) {
+function SkillsComponent_div_8_div_10_Template(rf, ctx) {
   if (rf & 1) {
-    \u0275\u0275elementStart(0, "div", 5);
-    \u0275\u0275element(1, "div", 6);
-    \u0275\u0275elementStart(2, "div")(3, "h4");
-    \u0275\u0275text(4);
+    \u0275\u0275elementStart(0, "div", 9)(1, "div", 10)(2, "span", 11);
+    \u0275\u0275text(3);
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(5, "div", 7);
+    \u0275\u0275elementStart(4, "span", 12);
+    \u0275\u0275text(5);
+    \u0275\u0275elementEnd()();
+    \u0275\u0275elementStart(6, "div", 13);
+    \u0275\u0275element(7, "div", 14);
+    \u0275\u0275elementEnd()();
+  }
+  if (rf & 2) {
+    const skill_r1 = ctx.$implicit;
+    const si_r2 = ctx.index;
+    const ci_r3 = \u0275\u0275nextContext().index;
+    const ctx_r3 = \u0275\u0275nextContext();
+    \u0275\u0275advance(3);
+    \u0275\u0275textInterpolate(skill_r1.name);
+    \u0275\u0275advance(2);
+    \u0275\u0275textInterpolate1("", skill_r1.level, "%");
+    \u0275\u0275advance(2);
+    \u0275\u0275styleProp("background", "linear-gradient(90deg, " + skill_r1.color + "cc, " + skill_r1.color + "66)")("--target-width", skill_r1.level + "%")("transition-delay", ci_r3 * 0.15 + si_r2 * 0.08 + "s");
+    \u0275\u0275classProp("visible", ctx_r3.barsVisible());
+  }
+}
+function SkillsComponent_div_8_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "div", 4)(1, "div", 5)(2, "span", 6);
+    \u0275\u0275text(3);
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(4, "div")(5, "h3");
     \u0275\u0275text(6);
     \u0275\u0275elementEnd();
     \u0275\u0275elementStart(7, "p");
     \u0275\u0275text(8);
     \u0275\u0275elementEnd()()();
+    \u0275\u0275elementStart(9, "div", 7);
+    \u0275\u0275template(10, SkillsComponent_div_8_div_10_Template, 8, 10, "div", 8);
+    \u0275\u0275elementEnd()();
   }
   if (rf & 2) {
-    const exp_r1 = ctx.$implicit;
-    \u0275\u0275advance(4);
-    \u0275\u0275textInterpolate(exp_r1.role);
+    const cat_r5 = ctx.$implicit;
+    \u0275\u0275advance(3);
+    \u0275\u0275textInterpolate(cat_r5.icon);
+    \u0275\u0275advance(3);
+    \u0275\u0275textInterpolate(cat_r5.title);
     \u0275\u0275advance(2);
-    \u0275\u0275textInterpolate2("", exp_r1.duration, " \u2022 ", exp_r1.technologies, "");
+    \u0275\u0275textInterpolate(cat_r5.desc);
     \u0275\u0275advance(2);
-    \u0275\u0275textInterpolate(exp_r1.description);
+    \u0275\u0275property("ngForOf", cat_r5.skills);
+  }
+}
+var SkillsComponent = class _SkillsComponent {
+  doc = inject(DOCUMENT2);
+  sectionState = signal("hidden");
+  barsVisible = signal(false);
+  categories = [
+    {
+      icon: "\u26A1",
+      title: "Frontend Development",
+      desc: "Building responsive, accessible interfaces with modern web standards and best practices.",
+      skills: [
+        { name: "Angular (v12\u201318)", level: 85, color: "#dd1b16" },
+        { name: "TypeScript", level: 80, color: "#3178c6" },
+        { name: "HTML5 / CSS3", level: 90, color: "#e34c26" },
+        { name: "JavaScript (ES2022+)", level: 78, color: "#f0b90b" }
+      ]
+    },
+    {
+      icon: "\u{1F6E0}",
+      title: "Frameworks & Tools",
+      desc: "Modern Angular ecosystem \u2014 from state management to testing and build tooling.",
+      skills: [
+        { name: "RxJS / Observables", level: 74, color: "#b7178c" },
+        { name: "Angular Material", level: 76, color: "#7c5cff" },
+        { name: "Git / GitHub", level: 82, color: "#f05032" },
+        { name: "REST API Integration", level: 79, color: "#23c2ff" }
+      ]
+    },
+    {
+      icon: "\u{1F3AF}",
+      title: "Core Strengths",
+      desc: "What I consistently deliver \u2014 clean, maintainable, and performant frontend code.",
+      skills: [
+        { name: "Reusable Components", level: 88, color: "#2dd4bf" },
+        { name: "Reactive Forms", level: 84, color: "#7c5cff" },
+        { name: "Performance Optimisation", level: 72, color: "#f59e0b" },
+        { name: "UI Debugging & Fixes", level: 85, color: "#23c2ff" }
+      ]
+    }
+  ];
+  ngAfterViewInit() {
+    const section = this.doc.querySelector("#skills");
+    if (!section)
+      return;
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          this.sectionState.set("visible");
+          setTimeout(() => this.barsVisible.set(true), 400);
+          io.disconnect();
+        }
+      });
+    }, { threshold: 0.15 });
+    io.observe(section);
+  }
+  static \u0275fac = function SkillsComponent_Factory(__ngFactoryType__) {
+    return new (__ngFactoryType__ || _SkillsComponent)();
+  };
+  static \u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _SkillsComponent, selectors: [["app-skills"]], standalone: true, features: [\u0275\u0275StandaloneFeature], decls: 9, vars: 3, consts: [["id", "skills"], [1, "section-head"], [1, "grid-3", "skills-grid"], ["class", "skill-card tile", 4, "ngFor", "ngForOf"], [1, "skill-card", "tile"], [1, "skill-card-header"], ["aria-hidden", "true", 1, "skill-icon"], [1, "skill-bars"], ["class", "skill-bar-item", 4, "ngFor", "ngForOf"], [1, "skill-bar-item"], [1, "skill-bar-meta"], [1, "skill-name"], [1, "skill-pct"], [1, "skill-bar-track"], [1, "skill-bar-fill"]], template: function SkillsComponent_Template(rf, ctx) {
+    if (rf & 1) {
+      \u0275\u0275elementStart(0, "section", 0)(1, "div", 1)(2, "div")(3, "h2");
+      \u0275\u0275text(4, "Skills");
+      \u0275\u0275elementEnd();
+      \u0275\u0275elementStart(5, "p");
+      \u0275\u0275text(6, "Core competencies and tools I use to build production Angular applications.");
+      \u0275\u0275elementEnd()()();
+      \u0275\u0275elementStart(7, "div", 2);
+      \u0275\u0275template(8, SkillsComponent_div_8_Template, 11, 4, "div", 3);
+      \u0275\u0275elementEnd()();
+    }
+    if (rf & 2) {
+      \u0275\u0275advance();
+      \u0275\u0275property("@headerReveal", ctx.sectionState());
+      \u0275\u0275advance(6);
+      \u0275\u0275property("@cardsReveal", ctx.sectionState());
+      \u0275\u0275advance();
+      \u0275\u0275property("ngForOf", ctx.categories);
+    }
+  }, dependencies: [CommonModule, NgForOf], encapsulation: 2, data: { animation: [
+    // Cards stagger in with bounce-landing keyframes
+    trigger("cardsReveal", [
+      transition("hidden => visible", [
+        query(".skill-card", [
+          style({ opacity: 0 }),
+          stagger(110, [
+            animate("0.7s ease", keyframes([
+              style({ opacity: 0, transform: "translateY(36px) scale(0.92)", offset: 0 }),
+              style({ opacity: 1, transform: "translateY(-5px) scale(1.02)", offset: 0.72 }),
+              style({ opacity: 1, transform: "translateY(2px) scale(0.99)", offset: 0.88 }),
+              style({ opacity: 1, transform: "none", offset: 1 })
+            ]))
+          ])
+        ], { optional: true })
+      ])
+    ]),
+    // Section header reveal
+    trigger("headerReveal", [
+      state("hidden", style({ opacity: 0, transform: "translateY(16px)" })),
+      state("visible", style({ opacity: 1, transform: "none" })),
+      transition("hidden => visible", animate("0.6s cubic-bezier(0.2, 0.9, 0.2, 1)"))
+    ])
+  ] } });
+};
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(SkillsComponent, { className: "SkillsComponent", filePath: "src\\app\\components\\skills\\skills.component.ts", lineNumber: 50 });
+})();
+
+// src/app/components/projects/projects.component.ts
+function ProjectsComponent_article_8_span_4_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "span", 15);
+    \u0275\u0275text(1);
+    \u0275\u0275elementEnd();
+  }
+  if (rf & 2) {
+    const b_r4 = ctx.$implicit;
+    \u0275\u0275advance();
+    \u0275\u0275textInterpolate(b_r4);
+  }
+}
+function ProjectsComponent_article_8_li_10_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "li");
+    \u0275\u0275text(1);
+    \u0275\u0275elementEnd();
+  }
+  if (rf & 2) {
+    const h_r5 = ctx.$implicit;
+    \u0275\u0275advance();
+    \u0275\u0275textInterpolate(h_r5);
+  }
+}
+function ProjectsComponent_article_8_span_12_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "span", 16);
+    \u0275\u0275text(1);
+    \u0275\u0275elementEnd();
+  }
+  if (rf & 2) {
+    const t_r6 = ctx.$implicit;
+    const ti_r7 = ctx.index;
+    const i_r2 = \u0275\u0275nextContext().index;
+    const ctx_r2 = \u0275\u0275nextContext();
+    \u0275\u0275styleProp("transition-delay", ctx_r2.hoveredIndex() === i_r2 ? ti_r7 * 0.04 + "s" : "0s");
+    \u0275\u0275classProp("tag-lit", ctx_r2.hoveredIndex() === i_r2);
+    \u0275\u0275advance();
+    \u0275\u0275textInterpolate1(" ", t_r6, " ");
+  }
+}
+function ProjectsComponent_article_8_Template(rf, ctx) {
+  if (rf & 1) {
+    const _r1 = \u0275\u0275getCurrentView();
+    \u0275\u0275elementStart(0, "article", 4);
+    \u0275\u0275listener("mouseenter", function ProjectsComponent_article_8_Template_article_mouseenter_0_listener() {
+      const i_r2 = \u0275\u0275restoreView(_r1).index;
+      const ctx_r2 = \u0275\u0275nextContext();
+      return \u0275\u0275resetView(ctx_r2.hoveredIndex.set(i_r2));
+    })("mouseleave", function ProjectsComponent_article_8_Template_article_mouseleave_0_listener() {
+      \u0275\u0275restoreView(_r1);
+      const ctx_r2 = \u0275\u0275nextContext();
+      return \u0275\u0275resetView(ctx_r2.hoveredIndex.set(-1));
+    });
+    \u0275\u0275element(1, "div", 5);
+    \u0275\u0275elementStart(2, "div", 6)(3, "div", 7);
+    \u0275\u0275template(4, ProjectsComponent_article_8_span_4_Template, 2, 1, "span", 8);
+    \u0275\u0275elementEnd()();
+    \u0275\u0275elementStart(5, "h3");
+    \u0275\u0275text(6);
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(7, "p");
+    \u0275\u0275text(8);
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(9, "ul", 9);
+    \u0275\u0275template(10, ProjectsComponent_article_8_li_10_Template, 2, 1, "li", 10);
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(11, "div", 11);
+    \u0275\u0275template(12, ProjectsComponent_article_8_span_12_Template, 2, 5, "span", 12);
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(13, "div", 13)(14, "a", 14);
+    \u0275\u0275listener("click", function ProjectsComponent_article_8_Template_a_click_14_listener($event) {
+      const p_r8 = \u0275\u0275restoreView(_r1).$implicit;
+      return \u0275\u0275resetView(p_r8.link === "#" && $event.preventDefault());
+    });
+    \u0275\u0275text(15, " View Details \u2197 ");
+    \u0275\u0275elementEnd()()();
+  }
+  if (rf & 2) {
+    const p_r8 = ctx.$implicit;
+    const i_r2 = ctx.index;
+    const ctx_r2 = \u0275\u0275nextContext();
+    \u0275\u0275property("@cardHover", ctx_r2.hoveredIndex() === i_r2 ? "hovered" : "idle");
+    \u0275\u0275advance();
+    \u0275\u0275styleProp("background", "linear-gradient(90deg," + p_r8.badgeColor + ", transparent)");
+    \u0275\u0275classProp("bar-active", ctx_r2.hoveredIndex() === i_r2);
+    \u0275\u0275advance(3);
+    \u0275\u0275property("ngForOf", p_r8.badges);
+    \u0275\u0275advance(2);
+    \u0275\u0275textInterpolate(p_r8.title);
+    \u0275\u0275advance(2);
+    \u0275\u0275textInterpolate(p_r8.description);
+    \u0275\u0275advance(2);
+    \u0275\u0275property("ngForOf", p_r8.highlights);
+    \u0275\u0275advance(2);
+    \u0275\u0275property("ngForOf", p_r8.tags);
+    \u0275\u0275advance(2);
+    \u0275\u0275property("href", p_r8.link, \u0275\u0275sanitizeUrl);
+  }
+}
+var ProjectsComponent = class _ProjectsComponent {
+  doc = inject(DOCUMENT2);
+  sectionState = signal("hidden");
+  hoveredIndex = signal(-1);
+  projects = [
+    {
+      badges: ["SaaS", "ERP", "Micro-Frontend"],
+      badgeColor: "#7c5cff",
+      title: "REval \u2013 Multi-Module SaaS ERP",
+      description: "REval is a full-scale SaaS ERP platform built with Angular Module Federation (Webpack 5). The ERP contains dedicated submodules \u2014 HRMS, Payroll, POS, Finance, Healthcare, Procurement, and Project Management \u2014 each independently deployable and integrated via a unified shell application.",
+      highlights: [
+        "ERP Submodules: HRMS, Payroll, POS, Finance, Healthcare, Procurement & Project Management \u2014 all built as micro-frontends inside the ERP",
+        "Module Federation (Webpack 5) \u2014 each submodule deploys independently while sharing the ERP shell",
+        "Shared Angular component library and design system used consistently across all submodules",
+        "Role-based access control (RBAC) with per-submodule permission matrix for fine-grained access",
+        "Complex multi-step reactive forms with dynamic validation tailored per submodule workflow",
+        "Real-time dashboards with live data feeds via RxJS & REST APIs across all modules"
+      ],
+      tags: ["Angular 15", "Module Federation", "HRMS", "POS", "Healthcare", "Procurement", "TypeScript", "RxJS"],
+      link: "#"
+    },
+    {
+      badges: ["E-Commerce", "Retail"],
+      badgeColor: "#23c2ff",
+      title: "Watch Station India",
+      description: "Responsive e-commerce platform for Watch Station India \u2014 a premium watch retailer. Built product catalog pages, category navigation, filtering, and a streamlined checkout flow with brand-guarantee and shipment-tracking integration.",
+      highlights: [
+        "Category navigation \u2014 Womens, Mens, Brands, Watches, Jewelry, Leathers, Sale",
+        "Dynamic product filtering and search across 1000+ SKUs",
+        "Integrated Brand Warranty, Easy Return, and Express Shipment status features",
+        "Safe & Secure checkout with responsive design for all screen sizes",
+        "Performance-optimised lazy-loaded product listing pages"
+      ],
+      tags: ["Angular", "E-Commerce", "TypeScript", "REST API", "Responsive", "Lazy Loading"],
+      link: "#"
+    },
+    {
+      badges: ["Planning", "Enterprise"],
+      badgeColor: "#2dd4bf",
+      title: "ITC Production Planning",
+      description: "Production planning module with dynamic data grids, bulk Excel/PDF export, multi-criteria filters, and inline editing \u2014 efficiently handling large record sets without performance degradation.",
+      highlights: [
+        "Virtual scrolling for large dataset performance (10k+ records)",
+        "Bulk export to Excel and PDF formats",
+        "Multi-column filter engine with saved filter presets",
+        "Inline cell editing with optimistic UI updates"
+      ],
+      tags: ["Angular", "Data Tables", "Export", "Filters", "Optimisation"],
+      link: "#"
+    }
+  ];
+  ngAfterViewInit() {
+    const section = this.doc.querySelector("#projects");
+    if (!section)
+      return;
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          this.sectionState.set("visible");
+          io.disconnect();
+        }
+      });
+    }, { threshold: 0.1 });
+    io.observe(section);
+  }
+  static \u0275fac = function ProjectsComponent_Factory(__ngFactoryType__) {
+    return new (__ngFactoryType__ || _ProjectsComponent)();
+  };
+  static \u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _ProjectsComponent, selectors: [["app-projects"]], standalone: true, features: [\u0275\u0275StandaloneFeature], decls: 9, vars: 3, consts: [["id", "projects"], [1, "section-head"], [1, "grid-3"], ["class", "project", 3, "mouseenter", "mouseleave", 4, "ngFor", "ngForOf"], [1, "project", 3, "mouseenter", "mouseleave"], [1, "project-accent-bar"], [1, "top"], [2, "display", "flex", "gap", "6px", "flex-wrap", "wrap"], ["class", "badge", 4, "ngFor", "ngForOf"], [1, "project-highlights"], [4, "ngFor", "ngForOf"], [1, "tag-row"], ["class", "tag", 3, "transition-delay", "tag-lit", 4, "ngFor", "ngForOf"], [1, "actions"], [1, "link", 3, "click", "href"], [1, "badge"], [1, "tag"]], template: function ProjectsComponent_Template(rf, ctx) {
+    if (rf & 1) {
+      \u0275\u0275elementStart(0, "section", 0)(1, "div", 1)(2, "div")(3, "h2");
+      \u0275\u0275text(4, "Projects");
+      \u0275\u0275elementEnd();
+      \u0275\u0275elementStart(5, "p");
+      \u0275\u0275text(6, "Real-world Angular applications built for enterprise, SaaS, and e-commerce products.");
+      \u0275\u0275elementEnd()()();
+      \u0275\u0275elementStart(7, "div", 2);
+      \u0275\u0275template(8, ProjectsComponent_article_8_Template, 16, 11, "article", 3);
+      \u0275\u0275elementEnd()();
+    }
+    if (rf & 2) {
+      \u0275\u0275advance();
+      \u0275\u0275property("@headerReveal", ctx.sectionState());
+      \u0275\u0275advance(6);
+      \u0275\u0275property("@projectsReveal", ctx.sectionState());
+      \u0275\u0275advance();
+      \u0275\u0275property("ngForOf", ctx.projects);
+    }
+  }, dependencies: [CommonModule, NgForOf], encapsulation: 2, data: { animation: [
+    // Section header
+    trigger("headerReveal", [
+      state("hidden", style({ opacity: 0, transform: "translateY(16px)" })),
+      state("visible", style({ opacity: 1, transform: "none" })),
+      transition("hidden => visible", animate("0.55s cubic-bezier(0.2, 0.9, 0.2, 1)"))
+    ]),
+    // Stagger + bounce entry for cards
+    trigger("projectsReveal", [
+      transition("hidden => visible", [
+        query(".project", [
+          style({ opacity: 0 }),
+          stagger(130, [
+            animate("0.75s ease", keyframes([
+              style({ opacity: 0, transform: "translateY(40px) scale(0.93)", offset: 0 }),
+              style({ opacity: 1, transform: "translateY(-6px) scale(1.02)", offset: 0.7 }),
+              style({ opacity: 1, transform: "translateY(2px)  scale(0.99)", offset: 0.88 }),
+              style({ opacity: 1, transform: "none", offset: 1 })
+            ]))
+          ])
+        ], { optional: true })
+      ])
+    ]),
+    // Per-card hover animation (lift + glow-in)
+    trigger("cardHover", [
+      state("idle", style({
+        transform: "translateY(0) scale(1)",
+        boxShadow: "0 4px 16px rgba(0,0,0,0.25)"
+      })),
+      state("hovered", style({
+        transform: "translateY(-6px) scale(1.015)",
+        boxShadow: "0 16px 40px rgba(124,92,255,0.22), 0 0 0 1px rgba(124,92,255,0.3)"
+      })),
+      transition("idle <=> hovered", animate("0.28s cubic-bezier(0.2, 0.9, 0.2, 1)"))
+    ])
+  ] } });
+};
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(ProjectsComponent, { className: "ProjectsComponent", filePath: "src\\app\\components\\projects\\projects.component.ts", lineNumber: 59 });
+})();
+
+// src/app/components/experience/experience.component.ts
+function ExperienceComponent_div_9_li_15_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "li");
+    \u0275\u0275element(1, "span", 14);
+    \u0275\u0275text(2);
+    \u0275\u0275elementEnd();
+  }
+  if (rf & 2) {
+    const h_r1 = ctx.$implicit;
+    \u0275\u0275advance(2);
+    \u0275\u0275textInterpolate1(" ", h_r1, " ");
+  }
+}
+function ExperienceComponent_div_9_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "div", 5);
+    \u0275\u0275element(1, "div", 6);
+    \u0275\u0275elementStart(2, "div", 7)(3, "div", 8)(4, "div")(5, "h4");
+    \u0275\u0275text(6);
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(7, "div", 9);
+    \u0275\u0275text(8);
+    \u0275\u0275elementEnd()();
+    \u0275\u0275elementStart(9, "span", 10);
+    \u0275\u0275text(10);
+    \u0275\u0275elementEnd()();
+    \u0275\u0275element(11, "div", 11);
+    \u0275\u0275elementStart(12, "p");
+    \u0275\u0275text(13);
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(14, "ul", 12);
+    \u0275\u0275template(15, ExperienceComponent_div_9_li_15_Template, 3, 1, "li", 13);
+    \u0275\u0275elementEnd()()();
+  }
+  if (rf & 2) {
+    const exp_r2 = ctx.$implicit;
+    const ctx_r2 = \u0275\u0275nextContext();
+    \u0275\u0275advance(6);
+    \u0275\u0275textInterpolate(exp_r2.role);
+    \u0275\u0275advance(2);
+    \u0275\u0275textInterpolate(exp_r2.company);
+    \u0275\u0275advance(2);
+    \u0275\u0275textInterpolate1("Dec 2024 \u2013 Present \u2022 ", ctx_r2.liveDuration, "");
+    \u0275\u0275advance();
+    \u0275\u0275property("innerHTML", exp_r2.technologies, \u0275\u0275sanitizeHtml);
+    \u0275\u0275advance(2);
+    \u0275\u0275textInterpolate(exp_r2.description);
+    \u0275\u0275advance();
+    \u0275\u0275property("@highlightReveal", ctx_r2.sectionState());
+    \u0275\u0275advance();
+    \u0275\u0275property("ngForOf", exp_r2.highlights);
   }
 }
 var ExperienceComponent = class _ExperienceComponent {
+  doc = inject(DOCUMENT2);
+  sectionState = signal("hidden");
+  // Join date — change this when you join a new company
+  joinDate = new Date(2024, 11, 1);
+  // December 2024 (month is 0-indexed)
+  /** Returns a human-readable duration like "1 yr 3 mos" from joinDate to today. */
+  get liveDuration() {
+    const now = /* @__PURE__ */ new Date();
+    let years = now.getFullYear() - this.joinDate.getFullYear();
+    let months = now.getMonth() - this.joinDate.getMonth();
+    if (months < 0) {
+      years--;
+      months += 12;
+    }
+    const parts = [];
+    if (years > 0)
+      parts.push(`${years} yr`);
+    if (months > 0)
+      parts.push(`${months} mos`);
+    return parts.length ? parts.join(" ") : "Less than 1 month";
+  }
   experiences = [
     {
-      role: "Angular Developer",
-      duration: "1.6 Years",
-      technologies: "Angular \u2022 SaaS / ERP",
-      description: "Worked on REval ERP SaaS application involving planning modules, forms, validations, and UI enhancements."
+      role: "Angular Frontend Developer",
+      company: "SaaS & ERP Product Company",
+      duration: "",
+      // computed below via liveDuration getter
+      technologies: "Angular 12\u201318 &bull; TypeScript &bull; RxJS &bull; HTML/CSS &bull; REST API &bull; Git",
+      description: "Building and maintaining enterprise Angular applications across real estate ERP and SaaS POS products. Collaborate closely with backend engineers, UI/UX designers, and business analysts in agile sprints.",
+      highlights: [
+        "Developed 20+ reusable Angular components, significantly reducing duplication across modules",
+        "Built complex reactive forms with dynamic field generation and cross-field validation",
+        "Implemented role-based access control (RBAC) driving dynamic UI rendering per user role",
+        "Optimised bundle size by ~28% through lazy-loaded modules and tree-shaking",
+        "Integrated REST APIs using RxJS operators (switchMap, combineLatest, debounceTime)",
+        "Delivered high-priority UI bug fixes under tight sprint deadlines with zero regressions"
+      ]
     }
   ];
+  ngAfterViewInit() {
+    const section = this.doc.querySelector("#experience");
+    if (!section)
+      return;
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          this.sectionState.set("visible");
+          io.disconnect();
+        }
+      });
+    }, { threshold: 0.1 });
+    io.observe(section);
+  }
   static \u0275fac = function ExperienceComponent_Factory(__ngFactoryType__) {
     return new (__ngFactoryType__ || _ExperienceComponent)();
   };
-  static \u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _ExperienceComponent, selectors: [["app-experience"]], standalone: true, features: [\u0275\u0275StandaloneFeature], decls: 10, vars: 1, consts: [["id", "experience"], [1, "section-head"], [1, "card", 2, "padding", "18px"], [1, "timeline"], ["class", "step", 4, "ngFor", "ngForOf"], [1, "step"], ["aria-hidden", "true", 1, "dot"], [1, "meta"]], template: function ExperienceComponent_Template(rf, ctx) {
+  static \u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _ExperienceComponent, selectors: [["app-experience"]], standalone: true, features: [\u0275\u0275StandaloneFeature], decls: 10, vars: 4, consts: [["id", "experience"], [1, "section-head"], [1, "exp-card", "card"], [1, "timeline"], ["class", "step", 4, "ngFor", "ngForOf"], [1, "step"], ["aria-hidden", "true", 1, "dot"], [1, "step-body"], [1, "step-header"], [1, "exp-company"], [1, "exp-badge"], [1, "meta", 3, "innerHTML"], [1, "highlight-list"], [4, "ngFor", "ngForOf"], ["aria-hidden", "true", 1, "hl-dot"]], template: function ExperienceComponent_Template(rf, ctx) {
     if (rf & 1) {
       \u0275\u0275elementStart(0, "section", 0)(1, "div", 1)(2, "div")(3, "h2");
       \u0275\u0275text(4, "Experience");
       \u0275\u0275elementEnd();
       \u0275\u0275elementStart(5, "p");
-      \u0275\u0275text(6, "Professional work experience.");
+      \u0275\u0275text(6, "Professional frontend development experience in enterprise and SaaS environments.");
       \u0275\u0275elementEnd()()();
       \u0275\u0275elementStart(7, "div", 2)(8, "div", 3);
-      \u0275\u0275template(9, ExperienceComponent_div_9_Template, 9, 4, "div", 4);
+      \u0275\u0275template(9, ExperienceComponent_div_9_Template, 16, 7, "div", 4);
       \u0275\u0275elementEnd()()();
     }
     if (rf & 2) {
-      \u0275\u0275advance(9);
+      \u0275\u0275advance();
+      \u0275\u0275property("@headerReveal", ctx.sectionState());
+      \u0275\u0275advance(6);
+      \u0275\u0275property("@cardReveal", ctx.sectionState());
+      \u0275\u0275advance();
+      \u0275\u0275property("@timelineReveal", ctx.sectionState());
+      \u0275\u0275advance();
       \u0275\u0275property("ngForOf", ctx.experiences);
     }
-  }, dependencies: [CommonModule, NgForOf], encapsulation: 2 });
+  }, dependencies: [CommonModule, NgForOf], encapsulation: 2, data: { animation: [
+    trigger("headerReveal", [
+      state("hidden", style({ opacity: 0, transform: "translateY(16px)" })),
+      state("visible", style({ opacity: 1, transform: "none" })),
+      transition("hidden => visible", animate("0.55s cubic-bezier(0.2, 0.9, 0.2, 1)"))
+    ]),
+    trigger("cardReveal", [
+      state("hidden", style({ opacity: 0, transform: "translateY(28px)" })),
+      state("visible", style({ opacity: 1, transform: "none" })),
+      transition("hidden => visible", animate("0.65s 0.1s cubic-bezier(0.2, 0.9, 0.2, 1)"))
+    ]),
+    trigger("timelineReveal", [
+      transition("hidden => visible", [
+        query(".step", [
+          style({ opacity: 0 }),
+          stagger(120, [
+            animate("0.65s ease", keyframes([
+              style({ opacity: 0, transform: "translateX(-32px) scale(0.95)", offset: 0 }),
+              style({ opacity: 1, transform: "translateX(4px)  scale(1.01)", offset: 0.75 }),
+              style({ opacity: 1, transform: "none", offset: 1 })
+            ]))
+          ])
+        ], { optional: true })
+      ])
+    ]),
+    trigger("highlightReveal", [
+      transition("hidden => visible", [
+        query("li", [
+          style({ opacity: 0, transform: "translateX(-16px)" }),
+          stagger(80, [
+            animate("0.45s cubic-bezier(0.2, 0.9, 0.2, 1)", style({ opacity: 1, transform: "none" }))
+          ])
+        ], { optional: true })
+      ])
+    ])
+  ] } });
 };
 (() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(ExperienceComponent, { className: "ExperienceComponent", filePath: "src\\app\\components\\experience\\experience.component.ts", lineNumber: 17 });
+  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(ExperienceComponent, { className: "ExperienceComponent", filePath: "src\\app\\components\\experience\\experience.component.ts", lineNumber: 59 });
 })();
 
 // src/app/components/contact/contact.component.ts
 var ContactComponent = class _ContactComponent {
   doc = inject(DOCUMENT2);
+  sectionState = signal("hidden");
+  ngAfterViewInit() {
+    const section = this.doc.querySelector("#contact");
+    if (!section)
+      return;
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          this.sectionState.set("visible");
+          io.disconnect();
+        }
+      });
+    }, { threshold: 0.1 });
+    io.observe(section);
+  }
   onSubmit(event) {
     event.preventDefault();
-    this.doc.defaultView?.alert("Design only - connect this to your backend later.");
+    this.doc.defaultView?.alert("Form submitted! Connect this to your backend or EmailJS.");
   }
   static \u0275fac = function ContactComponent_Factory(__ngFactoryType__) {
     return new (__ngFactoryType__ || _ContactComponent)();
   };
-  static \u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _ContactComponent, selectors: [["app-contact"]], standalone: true, features: [\u0275\u0275StandaloneFeature], decls: 56, vars: 0, consts: [["id", "contact"], [1, "section-head"], [1, "card", "contact-card"], [1, "grid-2"], [1, "tile"], [1, "tag-row"], [1, "tag"], [2, "margin-top", "12px", "color", "var(--muted)"], [1, "form", 3, "submit"], [1, "field"], ["placeholder", "Your name", 1, "input"], ["placeholder", "you@email.com", 1, "input"], [1, "field", 2, "grid-column", "1 / -1"], ["placeholder", "Project / Job / Question", 1, "input"], ["placeholder", "Write your message...", 1, "textarea"], ["type", "submit", 1, "btn", "btn-primary", 2, "grid-column", "1 / -1", "height", "46px"]], template: function ContactComponent_Template(rf, ctx) {
+  static \u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _ContactComponent, selectors: [["app-contact"]], standalone: true, features: [\u0275\u0275StandaloneFeature], decls: 83, vars: 2, consts: [["id", "contact"], [1, "section-head"], [1, "card", "contact-card"], [1, "grid-2"], [1, "tile", "contact-info-tile"], [1, "contact-info-list"], [1, "contact-info-row"], ["aria-hidden", "true", 1, "ci-icon"], [1, "ci-label"], ["href", "mailto:satyajitsutar32@gmail.com", 1, "ci-value"], [1, "ci-value"], [1, "ci-value", 2, "color", "var(--ok)", "font-weight", "700"], [2, "margin-top", "18px"], [2, "font-size", "12px", "color", "var(--muted-2)", "margin-bottom", "10px", "font-family", "var(--mono)"], [1, "tag-row"], [1, "tag"], [1, "tile"], [1, "form", 3, "submit"], [1, "field"], ["placeholder", "Your full name", "type", "text", 1, "input"], ["placeholder", "you@email.com", "type", "email", 1, "input"], [1, "field", 2, "grid-column", "1 / -1"], ["placeholder", "Project inquiry / Job opportunity / Question", "type", "text", 1, "input"], ["placeholder", "Tell me about your project, timeline, and what you need...", 1, "textarea"], ["type", "submit", 1, "btn", "btn-primary", 2, "grid-column", "1 / -1", "height", "48px", "font-size", "15px"]], template: function ContactComponent_Template(rf, ctx) {
     if (rf & 1) {
       \u0275\u0275elementStart(0, "section", 0)(1, "div", 1)(2, "div")(3, "h2");
       \u0275\u0275text(4, "Contact");
       \u0275\u0275elementEnd();
       \u0275\u0275elementStart(5, "p");
-      \u0275\u0275text(6, "Simple contact form + direct links. Keep it clean and professional.");
+      \u0275\u0275text(6, "Have a project or opportunity? I would love to hear from you.");
       \u0275\u0275elementEnd()()();
       \u0275\u0275elementStart(7, "div", 2)(8, "div", 3)(9, "div", 4)(10, "h3");
-      \u0275\u0275text(11, "Let's build something");
+      \u0275\u0275text(11, "Let's Work Together");
       \u0275\u0275elementEnd();
       \u0275\u0275elementStart(12, "p");
-      \u0275\u0275text(13, "Tell me about your product, timeline, and what you need help with.");
+      \u0275\u0275text(13, " I'm open to full-time roles, freelance contracts, and Angular consulting. Drop me a message and I'll respond within 24 hours. ");
       \u0275\u0275elementEnd();
-      \u0275\u0275elementStart(14, "div", 5)(15, "span", 6);
-      \u0275\u0275text(16, "Angular SSR");
+      \u0275\u0275elementStart(14, "div", 5)(15, "div", 6)(16, "span", 7);
+      \u0275\u0275text(17, "\u2709");
       \u0275\u0275elementEnd();
-      \u0275\u0275elementStart(17, "span", 6);
-      \u0275\u0275text(18, "Performance");
+      \u0275\u0275elementStart(18, "div")(19, "div", 8);
+      \u0275\u0275text(20, "Email");
       \u0275\u0275elementEnd();
-      \u0275\u0275elementStart(19, "span", 6);
-      \u0275\u0275text(20, "UI/UX");
-      \u0275\u0275elementEnd()();
-      \u0275\u0275elementStart(21, "div", 7)(22, "div")(23, "b");
-      \u0275\u0275text(24, "Email:");
-      \u0275\u0275elementEnd();
-      \u0275\u0275text(25, " satyajitsutar32@gmail.com");
-      \u0275\u0275elementEnd();
-      \u0275\u0275elementStart(26, "div")(27, "b");
-      \u0275\u0275text(28, "Location:");
-      \u0275\u0275elementEnd();
-      \u0275\u0275text(29, " Hyderabad");
-      \u0275\u0275elementEnd();
-      \u0275\u0275elementStart(30, "div")(31, "b");
-      \u0275\u0275text(32, "Response:");
-      \u0275\u0275elementEnd();
-      \u0275\u0275text(33, " within 24 hours");
+      \u0275\u0275elementStart(21, "a", 9);
+      \u0275\u0275text(22, "satyajitsutar32@gmail.com");
       \u0275\u0275elementEnd()()();
-      \u0275\u0275elementStart(34, "div", 4)(35, "h3");
-      \u0275\u0275text(36, "Send a message");
+      \u0275\u0275elementStart(23, "div", 6)(24, "span", 7);
+      \u0275\u0275text(25, "\uF4CD");
       \u0275\u0275elementEnd();
-      \u0275\u0275elementStart(37, "form", 8);
-      \u0275\u0275listener("submit", function ContactComponent_Template_form_submit_37_listener($event) {
+      \u0275\u0275elementStart(26, "div")(27, "div", 8);
+      \u0275\u0275text(28, "Location");
+      \u0275\u0275elementEnd();
+      \u0275\u0275elementStart(29, "div", 10);
+      \u0275\u0275text(30, "Hyderabad, India");
+      \u0275\u0275elementEnd()()();
+      \u0275\u0275elementStart(31, "div", 6)(32, "span", 7);
+      \u0275\u0275text(33, "\u23F1");
+      \u0275\u0275elementEnd();
+      \u0275\u0275elementStart(34, "div")(35, "div", 8);
+      \u0275\u0275text(36, "Response time");
+      \u0275\u0275elementEnd();
+      \u0275\u0275elementStart(37, "div", 10);
+      \u0275\u0275text(38, "Within 24 hours");
+      \u0275\u0275elementEnd()()();
+      \u0275\u0275elementStart(39, "div", 6)(40, "span", 7);
+      \u0275\u0275text(41, "\uF4CC");
+      \u0275\u0275elementEnd();
+      \u0275\u0275elementStart(42, "div")(43, "div", 8);
+      \u0275\u0275text(44, "Status");
+      \u0275\u0275elementEnd();
+      \u0275\u0275elementStart(45, "div", 11);
+      \u0275\u0275text(46, "Available for hire");
+      \u0275\u0275elementEnd()()()();
+      \u0275\u0275elementStart(47, "div", 12)(48, "div", 13);
+      \u0275\u0275text(49, "I can help with");
+      \u0275\u0275elementEnd();
+      \u0275\u0275elementStart(50, "div", 14)(51, "span", 15);
+      \u0275\u0275text(52, "Angular Apps");
+      \u0275\u0275elementEnd();
+      \u0275\u0275elementStart(53, "span", 15);
+      \u0275\u0275text(54, "Component Libraries");
+      \u0275\u0275elementEnd();
+      \u0275\u0275elementStart(55, "span", 15);
+      \u0275\u0275text(56, "Performance");
+      \u0275\u0275elementEnd();
+      \u0275\u0275elementStart(57, "span", 15);
+      \u0275\u0275text(58, "UI/UX");
+      \u0275\u0275elementEnd();
+      \u0275\u0275elementStart(59, "span", 15);
+      \u0275\u0275text(60, "Code Reviews");
+      \u0275\u0275elementEnd()()()();
+      \u0275\u0275elementStart(61, "div", 16)(62, "h3");
+      \u0275\u0275text(63, "Send a Message");
+      \u0275\u0275elementEnd();
+      \u0275\u0275elementStart(64, "form", 17);
+      \u0275\u0275listener("submit", function ContactComponent_Template_form_submit_64_listener($event) {
         return ctx.onSubmit($event);
       });
-      \u0275\u0275elementStart(38, "label", 9)(39, "span");
-      \u0275\u0275text(40, "Name");
+      \u0275\u0275elementStart(65, "label", 18)(66, "span");
+      \u0275\u0275text(67, "Name");
       \u0275\u0275elementEnd();
-      \u0275\u0275element(41, "input", 10);
+      \u0275\u0275element(68, "input", 19);
       \u0275\u0275elementEnd();
-      \u0275\u0275elementStart(42, "label", 9)(43, "span");
-      \u0275\u0275text(44, "Email");
+      \u0275\u0275elementStart(69, "label", 18)(70, "span");
+      \u0275\u0275text(71, "Email");
       \u0275\u0275elementEnd();
-      \u0275\u0275element(45, "input", 11);
+      \u0275\u0275element(72, "input", 20);
       \u0275\u0275elementEnd();
-      \u0275\u0275elementStart(46, "label", 12)(47, "span");
-      \u0275\u0275text(48, "Subject");
+      \u0275\u0275elementStart(73, "label", 21)(74, "span");
+      \u0275\u0275text(75, "Subject");
       \u0275\u0275elementEnd();
-      \u0275\u0275element(49, "input", 13);
+      \u0275\u0275element(76, "input", 22);
       \u0275\u0275elementEnd();
-      \u0275\u0275elementStart(50, "label", 12)(51, "span");
-      \u0275\u0275text(52, "Message");
+      \u0275\u0275elementStart(77, "label", 21)(78, "span");
+      \u0275\u0275text(79, "Message");
       \u0275\u0275elementEnd();
-      \u0275\u0275element(53, "textarea", 14);
+      \u0275\u0275element(80, "textarea", 23);
       \u0275\u0275elementEnd();
-      \u0275\u0275elementStart(54, "button", 15);
-      \u0275\u0275text(55, "Send");
+      \u0275\u0275elementStart(81, "button", 24);
+      \u0275\u0275text(82, " Send Message \u2709 ");
       \u0275\u0275elementEnd()()()()()();
     }
-  }, encapsulation: 2 });
+    if (rf & 2) {
+      \u0275\u0275advance();
+      \u0275\u0275property("@headerReveal", ctx.sectionState());
+      \u0275\u0275advance(7);
+      \u0275\u0275property("@cardReveal", ctx.sectionState());
+    }
+  }, encapsulation: 2, data: { animation: [
+    trigger("headerReveal", [
+      state("hidden", style({ opacity: 0, transform: "translateY(16px)" })),
+      state("visible", style({ opacity: 1, transform: "none" })),
+      transition("hidden => visible", animate("0.55s cubic-bezier(0.2, 0.9, 0.2, 1)"))
+    ]),
+    trigger("cardReveal", [
+      transition("hidden => visible", [
+        query(".tile", [
+          style({ opacity: 0, transform: "translateY(28px) scale(0.97)" }),
+          stagger(120, [
+            animate("0.6s cubic-bezier(0.2, 0.9, 0.2, 1)", style({ opacity: 1, transform: "none" }))
+          ])
+        ], { optional: true })
+      ])
+    ])
+  ] } });
 };
 (() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(ContactComponent, { className: "ContactComponent", filePath: "src\\app\\components\\contact\\contact.component.ts", lineNumber: 5 });
+  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(ContactComponent, { className: "ContactComponent", filePath: "src\\app\\components\\contact\\contact.component.ts", lineNumber: 30 });
 })();
 
 // src/app/components/footer/footer.component.ts
@@ -41241,6 +41893,9 @@ var AppComponent = class _AppComponent {
   destroyRef = inject(DestroyRef);
   theme = signal("dark");
   mobileMenuOpen = signal(false);
+  showScrollTop = signal(false);
+  scrollProgress = signal(0);
+  activeSection = signal("");
   year = (/* @__PURE__ */ new Date()).getFullYear();
   constructor() {
     effect(() => {
@@ -41258,11 +41913,52 @@ var AppComponent = class _AppComponent {
   closeMobileMenu() {
     this.mobileMenuOpen.set(false);
   }
+  scrollToTop() {
+    this.doc.defaultView?.scrollTo({ top: 0, behavior: "smooth" });
+  }
   ngAfterViewInit() {
     this.setupAnchorScroll();
     this.setupRevealAnimations();
     this.setupTiltOnHeroCards();
+    this.setupCursorSpotlight();
+    this.setupScrollTracking();
+    this.setupActiveSectionObserver();
   }
+  // ── Scroll tracking: progress bar + scroll-to-top visibility ──────────────
+  setupScrollTracking() {
+    const win = this.doc.defaultView;
+    if (!win)
+      return;
+    const onScroll = () => {
+      const scrollY = win.scrollY;
+      const docH = this.doc.documentElement.scrollHeight - win.innerHeight;
+      this.showScrollTop.set(scrollY > 350);
+      this.scrollProgress.set(docH > 0 ? Math.min(100, Math.round(scrollY / docH * 100)) : 0);
+    };
+    win.addEventListener("scroll", onScroll, { passive: true });
+    this.destroyRef.onDestroy(() => win.removeEventListener("scroll", onScroll));
+  }
+  // ── Active section highlighting ────────────────────────────────────────────
+  setupActiveSectionObserver() {
+    const win = this.doc.defaultView;
+    if (!win || !("IntersectionObserver" in win))
+      return;
+    const sectionIds = ["about", "skills", "projects", "experience", "contact"];
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          this.activeSection.set(entry.target.id);
+        }
+      });
+    }, { threshold: 0.35, rootMargin: "-10% 0px -50% 0px" });
+    sectionIds.forEach((id) => {
+      const el = this.doc.getElementById(id);
+      if (el)
+        io.observe(el);
+    });
+    this.destroyRef.onDestroy(() => io.disconnect());
+  }
+  // ── Smooth anchor scroll ───────────────────────────────────────────────────
   setupAnchorScroll() {
     const handler = (e) => {
       const target = e.target;
@@ -41280,91 +41976,19 @@ var AppComponent = class _AppComponent {
       this.closeMobileMenu();
     };
     this.doc.addEventListener("click", handler, { passive: false });
-    this.destroyRef.onDestroy(() => {
-      this.doc.removeEventListener("click", handler);
-    });
+    this.destroyRef.onDestroy(() => this.doc.removeEventListener("click", handler));
   }
+  // ── CSS reveal animations (elements NOT handled by Angular component triggers) ──
   setupRevealAnimations() {
     const prefersReduced = this.doc.defaultView?.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches ?? false;
-    const markStagger = (selector) => {
-      this.doc.querySelectorAll(selector).forEach((wrap) => {
-        wrap.classList.add("stagger");
-        Array.from(wrap.children).forEach((child, i) => {
-          child.classList.add("reveal", "reveal-up");
-          child.style.setProperty("--d", `${i * 80}ms`);
-        });
-      });
-    };
-    markStagger(".grid-3");
-    markStagger(".mini-grid");
-    this.doc.querySelectorAll("#about .grid-2").forEach((wrap) => {
-      const children = Array.from(wrap.children);
-      children.forEach((child, i) => {
-        child.classList.add("reveal");
-        if (i % 2 === 0) {
-          child.classList.add("reveal-left");
-        } else {
-          child.classList.add("reveal-right");
-        }
-        child.style.setProperty("--d", `${i * 100}ms`);
-      });
-    });
-    this.doc.querySelectorAll(".grid-2:not(#about .grid-2)").forEach((wrap) => {
+    this.doc.querySelectorAll(".mini-grid").forEach((wrap) => {
       wrap.classList.add("stagger");
       Array.from(wrap.children).forEach((child, i) => {
         child.classList.add("reveal", "reveal-up");
         child.style.setProperty("--d", `${i * 80}ms`);
       });
     });
-    const revealSingles = [
-      ".hero-left",
-      ".hero-right",
-      ".section-head:not(#about .section-head)",
-      ".card.contact-card",
-      "footer .foot"
-    ];
-    revealSingles.forEach((sel) => {
-      this.doc.querySelectorAll(sel).forEach((el) => el.classList.add("reveal", "reveal-up"));
-    });
-    this.doc.querySelectorAll("#about .section-head").forEach((el) => {
-      el.classList.add("reveal", "reveal-zoom");
-    });
-    this.doc.querySelectorAll(".timeline .step").forEach((el, i) => {
-      el.classList.add("reveal", "reveal-left");
-      el.style.setProperty("--d", `${i * 90}ms`);
-    });
-    this.doc.querySelectorAll("#about .contact-details-list .contact-item").forEach((item, i) => {
-      item.classList.add("reveal", "reveal-left");
-      item.style.setProperty("--d", `${100 + 400 + i * 60}ms`);
-    });
-    this.doc.querySelectorAll(".kicker").forEach((el) => {
-      el.classList.add("reveal", "reveal-down");
-      el.style.setProperty("--d", "0ms");
-    });
-    this.doc.querySelectorAll("h1").forEach((el) => {
-      el.classList.add("reveal", "reveal-up");
-      el.style.setProperty("--d", "100ms");
-    });
-    this.doc.querySelectorAll(".sub").forEach((el) => {
-      el.classList.add("reveal", "reveal-up");
-      el.style.setProperty("--d", "200ms");
-    });
-    this.doc.querySelectorAll(".hero-cta").forEach((cta) => {
-      Array.from(cta.children).forEach((btn, i) => {
-        btn.classList.add("reveal", "reveal-up");
-        btn.style.setProperty("--d", `${300 + i * 80}ms`);
-      });
-    });
-    this.doc.querySelectorAll(".meta-row").forEach((row) => {
-      Array.from(row.children).forEach((pill, i) => {
-        pill.classList.add("reveal", "reveal-zoom");
-        pill.style.setProperty("--d", `${400 + i * 70}ms`);
-      });
-    });
-    this.doc.querySelectorAll(".profile").forEach((el, i) => {
-      el.classList.add("reveal", "reveal-right");
-      el.style.setProperty("--d", `${i * 100}ms`);
-    });
+    this.doc.querySelectorAll("footer .foot").forEach((el) => el.classList.add("reveal", "reveal-up"));
     this.doc.querySelectorAll(".brand-badge").forEach((el) => {
       el.classList.add("reveal", "reveal-zoom");
       el.style.setProperty("--d", "100ms");
@@ -41374,9 +41998,7 @@ var AppComponent = class _AppComponent {
       return;
     }
     const win = this.doc.defaultView;
-    if (!win)
-      return;
-    if (!("IntersectionObserver" in win)) {
+    if (!win || !("IntersectionObserver" in win)) {
       this.doc.querySelectorAll(".reveal").forEach((el) => el.classList.add("in-view"));
       return;
     }
@@ -41391,6 +42013,19 @@ var AppComponent = class _AppComponent {
     this.doc.querySelectorAll(".reveal").forEach((el) => io.observe(el));
     this.destroyRef.onDestroy(() => io.disconnect());
   }
+  // ── Cursor spotlight: CSS vars --cx/--cy track mouse position ────────────
+  setupCursorSpotlight() {
+    const win = this.doc.defaultView;
+    if (!win)
+      return;
+    const onMove = (e) => {
+      this.doc.documentElement.style.setProperty("--cx", `${e.clientX}px`);
+      this.doc.documentElement.style.setProperty("--cy", `${e.clientY}px`);
+    };
+    win.addEventListener("mousemove", onMove, { passive: true });
+    this.destroyRef.onDestroy(() => win.removeEventListener("mousemove", onMove));
+  }
+  // ── 3-D tilt on hero cards + all tiles/projects ───────────────────────────
   setupTiltOnHeroCards() {
     const win = this.doc.defaultView;
     if (!win)
@@ -41398,7 +42033,8 @@ var AppComponent = class _AppComponent {
     const prefersReduced = win.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches ?? false;
     if (prefersReduced)
       return;
-    const targets = this.doc.querySelectorAll(".hero-left, .hero-right");
+    const heroTargets = this.doc.querySelectorAll(".hero-left, .hero-right");
+    const softTargets = this.doc.querySelectorAll(".tile:not(.contact-info-tile), .project, .skill-card");
     const onMove = (card, e) => {
       const r = card.getBoundingClientRect();
       const x = (e.clientX - r.left) / r.width - 0.5;
@@ -41411,43 +42047,59 @@ var AppComponent = class _AppComponent {
       card.style.transform = "none";
     };
     const cleanups = [];
-    targets.forEach((card) => {
-      const htmlCard = card;
-      const move = (e) => onMove(card, e);
-      const leave = () => onLeave2(card);
-      htmlCard.addEventListener("mousemove", move);
-      htmlCard.addEventListener("mouseleave", leave);
-      cleanups.push(() => {
-        htmlCard.removeEventListener("mousemove", move);
-        htmlCard.removeEventListener("mouseleave", leave);
+    const attachTilt = (nodeList) => {
+      nodeList.forEach((card) => {
+        const htmlCard = card;
+        const move = (e) => onMove(card, e);
+        const leave = () => onLeave2(card);
+        htmlCard.addEventListener("mousemove", move);
+        htmlCard.addEventListener("mouseleave", leave);
+        cleanups.push(() => {
+          htmlCard.removeEventListener("mousemove", move);
+          htmlCard.removeEventListener("mouseleave", leave);
+        });
       });
-    });
+    };
+    attachTilt(heroTargets);
+    attachTilt(softTargets);
     this.destroyRef.onDestroy(() => cleanups.forEach((fn) => fn()));
   }
   static \u0275fac = function AppComponent_Factory(__ngFactoryType__) {
     return new (__ngFactoryType__ || _AppComponent)();
   };
-  static \u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _AppComponent, selectors: [["app-root"]], standalone: true, features: [\u0275\u0275StandaloneFeature], decls: 9, vars: 2, consts: [[3, "themeToggle", "menuToggle", "menuClose", "mobileMenuOpen"], ["id", "top", 1, "container"], [3, "year"]], template: function AppComponent_Template(rf, ctx) {
+  static \u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _AppComponent, selectors: [["app-root"]], standalone: true, features: [\u0275\u0275StandaloneFeature], decls: 12, vars: 6, consts: [["aria-hidden", "true", 1, "scroll-progress-bar"], [3, "themeToggle", "menuToggle", "menuClose", "mobileMenuOpen", "activeSection"], ["id", "top", 1, "container"], [3, "year"], ["aria-label", "Scroll to top", "title", "Back to top", 1, "scroll-top-btn", 3, "click"]], template: function AppComponent_Template(rf, ctx) {
     if (rf & 1) {
-      \u0275\u0275elementStart(0, "app-navbar", 0);
-      \u0275\u0275listener("themeToggle", function AppComponent_Template_app_navbar_themeToggle_0_listener() {
+      \u0275\u0275element(0, "div", 0);
+      \u0275\u0275elementStart(1, "app-navbar", 1);
+      \u0275\u0275listener("themeToggle", function AppComponent_Template_app_navbar_themeToggle_1_listener() {
         return ctx.toggleTheme();
-      })("menuToggle", function AppComponent_Template_app_navbar_menuToggle_0_listener() {
+      })("menuToggle", function AppComponent_Template_app_navbar_menuToggle_1_listener() {
         return ctx.toggleMobileMenu();
-      })("menuClose", function AppComponent_Template_app_navbar_menuClose_0_listener() {
+      })("menuClose", function AppComponent_Template_app_navbar_menuClose_1_listener() {
         return ctx.closeMobileMenu();
       });
       \u0275\u0275elementEnd();
-      \u0275\u0275elementStart(1, "main", 1);
-      \u0275\u0275element(2, "app-hero")(3, "app-about")(4, "app-skills")(5, "app-projects")(6, "app-experience")(7, "app-contact")(8, "app-footer", 2);
+      \u0275\u0275elementStart(2, "main", 2);
+      \u0275\u0275element(3, "app-hero")(4, "app-about")(5, "app-skills")(6, "app-projects")(7, "app-experience")(8, "app-contact")(9, "app-footer", 3);
+      \u0275\u0275elementEnd();
+      \u0275\u0275elementStart(10, "button", 4);
+      \u0275\u0275listener("click", function AppComponent_Template_button_click_10_listener() {
+        return ctx.scrollToTop();
+      });
+      \u0275\u0275text(11, " \u21E7\n");
       \u0275\u0275elementEnd();
     }
     if (rf & 2) {
-      \u0275\u0275property("mobileMenuOpen", ctx.mobileMenuOpen());
+      \u0275\u0275styleProp("width", ctx.scrollProgress(), "%");
+      \u0275\u0275advance();
+      \u0275\u0275property("mobileMenuOpen", ctx.mobileMenuOpen())("activeSection", ctx.activeSection());
       \u0275\u0275advance(8);
       \u0275\u0275property("year", ctx.year);
+      \u0275\u0275advance();
+      \u0275\u0275property("@scrollTopBtn", ctx.showScrollTop() ? "visible" : "hidden");
     }
   }, dependencies: [
+    CommonModule,
     NavbarComponent,
     HeroComponent,
     AboutComponent,
@@ -41456,10 +42108,16 @@ var AppComponent = class _AppComponent {
     ExperienceComponent,
     ContactComponent,
     FooterComponent
-  ], encapsulation: 2 });
+  ], encapsulation: 2, data: { animation: [
+    trigger("scrollTopBtn", [
+      state("hidden", style({ opacity: 0, transform: "scale(0.6) translateY(12px)", pointerEvents: "none" })),
+      state("visible", style({ opacity: 1, transform: "scale(1) translateY(0)", pointerEvents: "auto" })),
+      transition("hidden <=> visible", animate("0.28s cubic-bezier(0.2, 0.9, 0.2, 1)"))
+    ])
+  ] } });
 };
 (() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(AppComponent, { className: "AppComponent", filePath: "src\\app\\app.component.ts", lineNumber: 30 });
+  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(AppComponent, { className: "AppComponent", filePath: "src\\app\\app.component.ts", lineNumber: 43 });
 })();
 
 // src/main.ts
